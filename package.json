@@ -1,0 +1,24 @@
+{
+  "name": "nullex-store",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:bot": "pnpm --filter bot start:dev",
+    "build:web": "pnpm --filter web build",
+    "build:bot": "pnpm --filter bot build"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  }
+}
