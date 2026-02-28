@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import { House, Heart, ShoppingCart, UserRound } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import type { Tab } from '../../App'
 
 interface NavPillProps {
@@ -6,70 +8,123 @@ interface NavPillProps {
   onTabChange: (tab: Tab) => void
 }
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'home',    label: 'Home',    icon: '⌂' },
-  { id: 'liked',   label: 'Liked',   icon: '♡' },
-  { id: 'cart',    label: 'Cart',    icon: '⊡' },
-  { id: 'profile', label: 'Profile', icon: '◯' },
+const MAIN_TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
+  { id: 'home',  label: 'HOME',  Icon: House },
+  { id: 'liked', label: 'LIKED', Icon: Heart },
+  { id: 'cart',  label: 'CART',  Icon: ShoppingCart },
 ]
 
 export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
+  const isProfileActive = activeTab === 'profile'
+
   return (
-    <nav
+    <div
       style={{
         position: 'fixed',
-        bottom: '24px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        backgroundColor: 'rgba(26, 26, 46, 0.85)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderRadius: '32px',
-        padding: '8px 12px',
+        bottom: '15px',
+        left: '12px',
+        right: '12px',
         display: 'flex',
-        gap: '4px',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        gap: '8px',
         zIndex: 100,
+        alignItems: 'stretch',
       }}
     >
-      {TABS.map((tab) => {
-        const isActive = tab.id === activeTab
-        return (
-          <motion.button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            whileTap={{ scale: 0.9 }}
-            style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: isActive ? '8px 16px' : '8px 12px',
-              borderRadius: '24px',
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: isActive ? 'var(--green)' : 'transparent',
-              color: isActive ? '#000' : 'var(--muted2)',
-              fontWeight: isActive ? 700 : 500,
-              fontSize: '13px',
-              fontFamily: 'inherit',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <span style={{ fontSize: '16px' }}>{tab.icon}</span>
-            {isActive && (
-              <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
+      {/* 3-tab pill */}
+      <nav
+        style={{
+          flex: 1,
+          height: '56px',
+          display: 'flex',
+          padding: '4px',
+          borderRadius: '36px',
+          backgroundColor: 'rgba(255,255,255,0.039)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(255,255,255,0.133)',
+        }}
+      >
+        {MAIN_TABS.map((tab) => {
+          const isActive = tab.id === activeTab
+          return (
+            <motion.button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              whileTap={{ scale: 0.93 }}
+              style={{
+                flex: 1,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                borderRadius: '26px',
+                border: 'none',
+                cursor: 'pointer',
+                background: 'transparent',
+              }}
+            >
+              {/* Sliding indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="navIndicator"
+                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '26px',
+                    background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
+                  }}
+                />
+              )}
+
+              <tab.Icon
+                size={18}
+                color={isActive ? '#FFFFFF' : '#52525B'}
+                style={{ position: 'relative', zIndex: 1 }}
+              />
+              <span
+                style={{
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  fontSize: '9px',
+                  fontWeight: 600,
+                  color: isActive ? '#FFFFFF' : '#52525B',
+                  position: 'relative',
+                  zIndex: 1,
+                }}
               >
                 {tab.label}
-              </motion.span>
-            )}
-          </motion.button>
-        )
-      })}
-    </nav>
+              </span>
+            </motion.button>
+          )
+        })}
+      </nav>
+
+      {/* Separate Profile button */}
+      <motion.button
+        onClick={() => onTabChange('profile')}
+        whileTap={{ scale: 0.93 }}
+        style={{
+          width: '56px',
+          height: '56px',
+          borderRadius: '28px',
+          background: isProfileActive
+            ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)'
+            : 'linear-gradient(135deg, #1E1E3A 0%, #1A1A2E 100%)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(255,255,255,0.133)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          flexShrink: 0,
+          transition: 'background 0.3s ease',
+        }}
+      >
+        <UserRound size={22} color="#FFFFFF" />
+      </motion.button>
+    </div>
   )
 }
