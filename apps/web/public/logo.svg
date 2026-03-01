@@ -1,0 +1,33 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none"
+     xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="48%" r="50%">
+      <stop offset="0%"   stop-color="#A8FF3E" stop-opacity="0.18"/>
+      <stop offset="65%"  stop-color="#A8FF3E" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#A8FF3E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="bloom" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background card -->
+  <rect width="400" height="400" rx="84" fill="#12121F"/>
+
+  <!-- Radial neon glow -->
+  <ellipse cx="200" cy="192" rx="165" ry="155" fill="url(#glow)"/>
+
+  <!-- N lettermark (Lucide-style) -->
+  <polyline
+    points="132,268 132,132 200,213 268,132 268,268"
+    stroke="#A8FF3E"
+    stroke-width="22"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#bloom)"
+  />
+</svg>
