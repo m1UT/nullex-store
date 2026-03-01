@@ -35,6 +35,7 @@ export default function Home({ onProductClick }: HomeProps) {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
+        paddingTop: 100,
         paddingBottom: 96,
         overflowX: 'hidden',
       }}

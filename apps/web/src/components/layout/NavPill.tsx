@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { House, Heart, ShoppingCart, UserRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { Tab } from '../../App'
+import { getTelegramUser } from '../../lib/telegram'
 
 interface NavPillProps {
   activeTab: Tab
@@ -16,6 +17,7 @@ const MAIN_TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
 
 export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
   const isProfileActive = activeTab === 'profile'
+  const photoUrl = getTelegramUser()?.photo_url
 
   return (
     <div
@@ -123,7 +125,21 @@ export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
           transition: 'background 0.3s ease',
         }}
       >
-        <UserRound size={22} color="#FFFFFF" />
+        {photoUrl ? (
+          <img
+            src={photoUrl}
+            alt="profile"
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: isProfileActive ? '2px solid rgba(255,255,255,0.4)' : 'none',
+            }}
+          />
+        ) : (
+          <UserRound size={22} color="#FFFFFF" />
+        )}
       </motion.button>
     </div>
   )

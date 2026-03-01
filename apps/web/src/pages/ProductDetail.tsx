@@ -34,6 +34,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
+        paddingTop: 100,
         paddingBottom: 96,
         position: 'relative',
       }}

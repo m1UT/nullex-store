@@ -49,6 +49,7 @@ export default function Profile() {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
+        paddingTop: 100,
         paddingBottom: 96,
       }}
     >

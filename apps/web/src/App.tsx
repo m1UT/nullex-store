@@ -39,14 +39,6 @@ export default function App() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            drag="y"
-            dragConstraints={{ top: 0 }}
-            dragElastic={{ top: 0, bottom: 0.4 }}
-            onDragEnd={(_, info) => {
-              if (info.offset.y > 80 || info.velocity.y > 500) {
-                setSelectedProduct(null)
-              }
-            }}
             style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#0D0D14' }}
           >
             <ProductDetail

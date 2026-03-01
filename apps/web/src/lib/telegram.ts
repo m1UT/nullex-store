@@ -11,6 +11,7 @@ interface TelegramWebApp {
   expand: () => void
   close: () => void
   requestFullscreen?: () => void
+  platform: string
   initDataUnsafe: {
     user?: {
       id: number
@@ -29,12 +30,16 @@ interface TelegramWebApp {
   themeParams: Record<string, string>
 }
 
+const MOBILE_PLATFORMS = ['ios', 'android', 'android_x']
+
 export function initTelegram(): void {
   const tg = window.Telegram?.WebApp
   if (!tg) return
   tg.ready()
   tg.expand()
-  try { tg.requestFullscreen?.() } catch {}
+  if (MOBILE_PLATFORMS.includes(tg.platform)) {
+    try { tg.requestFullscreen?.() } catch {}
+  }
 }
 
 export function getTelegramUser() {
