@@ -10,6 +10,7 @@ interface TelegramWebApp {
   ready: () => void
   expand: () => void
   close: () => void
+  requestFullscreen?: () => void
   initDataUnsafe: {
     user?: {
       id: number
@@ -33,6 +34,7 @@ export function initTelegram(): void {
   if (!tg) return
   tg.ready()
   tg.expand()
+  try { tg.requestFullscreen?.() } catch {}
 }
 
 export function getTelegramUser() {

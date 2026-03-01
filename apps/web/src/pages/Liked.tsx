@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wallet, Heart, Signal, Wifi, Battery } from 'lucide-react'
+import { Wallet, Heart } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
@@ -23,24 +23,6 @@ export default function Liked({ onProductClick }: LikedProps) {
         paddingBottom: 96,
       }}
     >
-      {/* Status Bar */}
-      <div
-        style={{
-          height: 44,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 20px',
-        }}
-      >
-        <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>9:41</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Signal size={16} color="#FFFFFF" />
-          <Wifi size={16} color="#FFFFFF" />
-          <Battery size={16} color="#FFFFFF" style={{ width: 20 }} />
-        </div>
-      </div>
-
       {/* Header */}
       <div
         style={{

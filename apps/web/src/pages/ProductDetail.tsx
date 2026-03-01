@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowLeft, Share2, Heart, Star, ShoppingCart, Signal, Wifi, Battery } from 'lucide-react'
+import { ArrowLeft, Share2, Heart, Star, ShoppingCart } from 'lucide-react'
 import type { Product } from '../data/products'
 
 interface ProductDetailProps {
@@ -38,24 +38,6 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
         position: 'relative',
       }}
     >
-      {/* Status Bar */}
-      <div
-        style={{
-          height: 44,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 20px',
-        }}
-      >
-        <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>9:41</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Signal size={16} color="#FFFFFF" />
-          <Wifi size={16} color="#FFFFFF" />
-          <Battery size={16} color="#FFFFFF" style={{ width: 20 }} />
-        </div>
-      </div>
-
       {/* Detail Nav */}
       <div
         style={{

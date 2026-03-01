@@ -10,9 +10,6 @@ import {
   Box,
   Music2,
   LayoutGrid,
-  Signal,
-  Wifi,
-  Battery,
   Sparkles,
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
@@ -42,24 +39,6 @@ export default function Home({ onProductClick }: HomeProps) {
         overflowX: 'hidden',
       }}
     >
-      {/* Status Bar */}
-      <div
-        style={{
-          height: 44,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 20px',
-        }}
-      >
-        <span style={{ color: '#FFFFFF', fontSize: 15, fontWeight: 600 }}>9:41</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Signal size={16} color="#FFFFFF" />
-          <Wifi size={16} color="#FFFFFF" />
-          <Battery size={16} color="#FFFFFF" style={{ width: 20 }} />
-        </div>
-      </div>
-
       {/* Header */}
       <div
         style={{
@@ -70,11 +49,7 @@ export default function Home({ onProductClick }: HomeProps) {
           padding: '0 20px',
         }}
       >
-        {/* Left: greeting + title */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ color: '#71717A', fontSize: 13 }}>Good morning 👋</span>
-          <span style={{ color: '#FFFFFF', fontSize: 22, fontWeight: 700 }}>Nullex Store</span>
-        </div>
+        <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Nullex Store</span>
 
         {/* Right: balance pill only */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
