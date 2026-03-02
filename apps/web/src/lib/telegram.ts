@@ -11,6 +11,8 @@ interface TelegramWebApp {
   expand: () => void
   close: () => void
   disableVerticalSwipes: () => void
+  setBackgroundColor: (color: string) => void
+  setHeaderColor: (color: string) => void
   platform: string
   initDataUnsafe: {
     user?: {
@@ -36,6 +38,8 @@ export function initTelegram(): void {
   tg.ready()
   tg.expand()
   tg.disableVerticalSwipes?.()
+  tg.setBackgroundColor?.('#0D0D14')
+  tg.setHeaderColor?.('#0D0D14')
 }
 
 export function getTelegramUser() {
