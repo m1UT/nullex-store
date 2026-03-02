@@ -38,7 +38,7 @@ export function initTelegram(): void {
   if (!tg) return
   tg.ready()
   tg.expand()
-  tg.requestFullscreen?.()
+  try { tg.requestFullscreen?.() } catch (_) { /* unsupported on older clients */ }
   tg.disableVerticalSwipes?.()
   tg.setBackgroundColor?.('#0D0D14')
   tg.setHeaderColor?.('#0D0D14')
