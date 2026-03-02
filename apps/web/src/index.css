@@ -3,6 +3,7 @@
 @import "tailwindcss";
 
 :root {
+  --safe-top: env(safe-area-inset-top, 0px);
   --bg:      #0D0D14;
   --card:    #12121F;
   --surface: #1A1A2E;

@@ -6,6 +6,13 @@ declare global {
   }
 }
 
+interface SafeAreaInset {
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
 interface TelegramWebApp {
   ready: () => void
   expand: () => void
@@ -15,6 +22,8 @@ interface TelegramWebApp {
   setBackgroundColor: (color: string) => void
   setHeaderColor: (color: string) => void
   platform: string
+  safeAreaInset: SafeAreaInset
+  contentSafeAreaInset: SafeAreaInset
   initDataUnsafe: {
     user?: {
       id: number
@@ -36,27 +45,24 @@ interface TelegramWebApp {
 export function initTelegram(): void {
   const tg = window.Telegram?.WebApp
   if (!tg) return
+
   tg.ready()
   tg.expand()
   try { tg.requestFullscreen?.() } catch (_) { /* unsupported on older clients */ }
   tg.disableVerticalSwipes?.()
   tg.setBackgroundColor?.('#0D0D14')
   tg.setHeaderColor?.('#0D0D14')
+
+  // Set --safe-top from Telegram SDK insets (safeAreaInset + contentSafeAreaInset).
+  // Falls back to CSS env(safe-area-inset-top) defined in index.css.
+  const safeTop = (tg.safeAreaInset?.top ?? 0) + (tg.contentSafeAreaInset?.top ?? 0)
+  if (safeTop > 0) {
+    document.documentElement.style.setProperty('--safe-top', `${safeTop}px`)
+  }
 }
 
 export function getTelegramUser() {
   return window.Telegram?.WebApp?.initDataUnsafe?.user ?? null
-}
-
-export function isIOS(): boolean {
-  const platform = window.Telegram?.WebApp?.platform
-  if (platform) return platform === 'ios'
-  // Fallback for browser outside TMA
-  return /iPhone|iPad|iPod/i.test(navigator.userAgent)
-}
-
-export function getTopInset(): number {
-  return isIOS() ? 100 : 0
 }
 
 export const tg = (): TelegramWebApp | undefined => window.Telegram?.WebApp

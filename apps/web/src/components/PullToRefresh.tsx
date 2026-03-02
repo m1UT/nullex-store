@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { RefreshCw } from 'lucide-react'
-import { getTopInset } from '../lib/telegram'
 
 const MAX_PULL  = 110
 const THRESHOLD = 65
@@ -22,9 +21,12 @@ function isAnyParentScrolled(e: TouchEvent): boolean {
 export default function PullToRefresh() {
   const [pull, setPull]   = useState(0)
   const [phase, setPhase] = useState<Phase>('idle')
-  const startY   = useRef(0)
-  const active   = useRef(false)
-  const topInset = getTopInset()
+  const startY = useRef(0)
+  const active = useRef(false)
+  // Read --safe-top set by initTelegram() or CSS env(safe-area-inset-top)
+  const topInset = parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue('--safe-top') || '0'
+  ) || 0
 
   /* ── #root stretch transform ── */
   useEffect(() => {

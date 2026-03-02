@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { getTopInset } from '../lib/telegram'
 import {
   Trash2,
   Gamepad2,
@@ -47,7 +46,7 @@ export default function Cart() {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
-        paddingTop: getTopInset(),
+        paddingTop: 'var(--safe-top)',
         paddingBottom: 96,
       }}
     >
