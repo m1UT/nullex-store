@@ -10,6 +10,17 @@ const SNAP_EASE  = 'cubic-bezier(0.34, 1.45, 0.64, 1)'
 
 type Phase = 'idle' | 'pulling' | 'refreshing' | 'releasing'
 
+/** Returns true if any scrollable ancestor of the touch target is not at the top */
+function isAnyParentScrolled(e: TouchEvent): boolean {
+  if (window.scrollY > 0) return true
+  let el = e.target as HTMLElement | null
+  while (el && el !== document.documentElement) {
+    if (el.scrollTop > 0) return true
+    el = el.parentElement
+  }
+  return false
+}
+
 export default function PullToRefresh() {
   const [pull, setPull]   = useState(0)
   const [phase, setPhase] = useState<Phase>('idle')
@@ -37,13 +48,20 @@ export default function PullToRefresh() {
   /* ── touch listeners ── */
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
-      if (window.scrollY > 0) return
+      if (isAnyParentScrolled(e)) return
       startY.current = e.touches[0].clientY
       active.current = true
     }
 
     const onMove = (e: TouchEvent) => {
       if (!active.current) return
+      // cancel if user scrolled down since touch started
+      if (isAnyParentScrolled(e)) {
+        active.current = false
+        setPhase('idle')
+        setPull(0)
+        return
+      }
       const dy = e.touches[0].clientY - startY.current
       if (dy > 0) {
         if (phase !== 'pulling') setPhase('pulling')
