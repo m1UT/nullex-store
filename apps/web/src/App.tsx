@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import PullToRefresh from './components/PullToRefresh'
 import Home from './pages/Home'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
@@ -30,7 +29,6 @@ export default function App() {
     <div
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}
     >
-      <PullToRefresh />
       {renderPage()}
 
       <AnimatePresence>
