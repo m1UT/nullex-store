@@ -21,6 +21,7 @@ interface TelegramWebApp {
   requestFullscreen: () => void
   setBackgroundColor: (color: string) => void
   setHeaderColor: (color: string) => void
+  onEvent: (eventType: string, handler: () => void) => void
   platform: string
   safeAreaInset: SafeAreaInset
   contentSafeAreaInset: SafeAreaInset
@@ -42,6 +43,15 @@ interface TelegramWebApp {
   themeParams: Record<string, string>
 }
 
+function applySafeTop(): void {
+  const tg = window.Telegram?.WebApp
+  if (!tg) return
+  const safeTop = (tg.safeAreaInset?.top ?? 0) + (tg.contentSafeAreaInset?.top ?? 0)
+  if (safeTop > 0) {
+    document.documentElement.style.setProperty('--safe-top', `${safeTop}px`)
+  }
+}
+
 export function initTelegram(): void {
   const tg = window.Telegram?.WebApp
   if (!tg) return
@@ -53,12 +63,11 @@ export function initTelegram(): void {
   tg.setBackgroundColor?.('#0D0D14')
   tg.setHeaderColor?.('#0D0D14')
 
-  // Set --safe-top from Telegram SDK insets (safeAreaInset + contentSafeAreaInset).
-  // Falls back to CSS env(safe-area-inset-top) defined in index.css.
-  const safeTop = (tg.safeAreaInset?.top ?? 0) + (tg.contentSafeAreaInset?.top ?? 0)
-  if (safeTop > 0) {
-    document.documentElement.style.setProperty('--safe-top', `${safeTop}px`)
-  }
+  // Apply immediately, then re-apply whenever Telegram updates safe areas
+  // (values differ between Menu Button and Main App launch contexts)
+  applySafeTop()
+  tg.onEvent?.('safeAreaChanged', applySafeTop)
+  tg.onEvent?.('contentSafeAreaChanged', applySafeTop)
 }
 
 export function getTelegramUser() {
