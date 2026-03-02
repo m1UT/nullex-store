@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { usePullToRefresh } from './hooks/usePullToRefresh'
 import Home from './pages/Home'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
@@ -14,6 +15,7 @@ export type Tab = 'home' | 'liked' | 'cart' | 'profile'
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  usePullToRefresh()
 
 
   const renderPage = () => {

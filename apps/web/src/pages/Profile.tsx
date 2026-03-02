@@ -7,7 +7,7 @@ import {
   CreditCard,
   ChevronRight,
 } from 'lucide-react'
-import { getTelegramUser } from '../lib/telegram'
+import { getTelegramUser, getTopInset } from '../lib/telegram'
 
 export default function Profile() {
   const user = getTelegramUser()
@@ -49,7 +49,7 @@ export default function Profile() {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
-        paddingTop: 100,
+        paddingTop: getTopInset(),
         paddingBottom: 96,
       }}
     >

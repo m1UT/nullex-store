@@ -10,6 +10,7 @@ interface TelegramWebApp {
   ready: () => void
   expand: () => void
   close: () => void
+  disableVerticalSwipes: () => void
   platform: string
   initDataUnsafe: {
     user?: {
@@ -34,10 +35,22 @@ export function initTelegram(): void {
   if (!tg) return
   tg.ready()
   tg.expand()
+  tg.disableVerticalSwipes?.()
 }
 
 export function getTelegramUser() {
   return window.Telegram?.WebApp?.initDataUnsafe?.user ?? null
+}
+
+export function isIOS(): boolean {
+  const platform = window.Telegram?.WebApp?.platform
+  if (platform) return platform === 'ios'
+  // Fallback for browser outside TMA
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
+export function getTopInset(): number {
+  return isIOS() ? 100 : 0
 }
 
 export const tg = (): TelegramWebApp | undefined => window.Telegram?.WebApp

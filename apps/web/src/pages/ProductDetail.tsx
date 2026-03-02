@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, Share2, Heart, Star, ShoppingCart } from 'lucide-react'
 import type { Product } from '../data/products'
+import { getTopInset } from '../lib/telegram'
 
 interface ProductDetailProps {
   product: Product
@@ -34,7 +35,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
-        paddingTop: 100,
+        paddingTop: getTopInset(),
         paddingBottom: 96,
         position: 'relative',
       }}

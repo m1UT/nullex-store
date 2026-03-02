@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
+import { getTopInset } from '../lib/telegram'
 
 const CATEGORIES = [
   { label: 'All', Icon: LayoutGrid },
@@ -35,7 +36,7 @@ export default function Home({ onProductClick }: HomeProps) {
       style={{
         backgroundColor: '#0D0D14',
         minHeight: '100dvh',
-        paddingTop: 100,
+        paddingTop: getTopInset(),
         paddingBottom: 96,
         overflowX: 'hidden',
       }}
