@@ -1,15 +1,40 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { RefreshCw } from 'lucide-react'
+import { getTopInset } from '../lib/telegram'
 
-const THRESHOLD = 65
-const MAX_PULL = 80
+const THRESHOLD  = 70
+const MAX_PULL   = 110
+const DAMPING    = 0.42
+const SNAP_EASE  = 'cubic-bezier(0.34, 1.45, 0.64, 1)'
+
+type Phase = 'idle' | 'pulling' | 'refreshing' | 'releasing'
 
 export default function PullToRefresh() {
-  const [pullY, setPullY] = useState(0)
-  const [refreshing, setRefreshing] = useState(false)
+  const [pull, setPull]   = useState(0)
+  const [phase, setPhase] = useState<Phase>('idle')
   const startY = useRef(0)
   const active = useRef(false)
+  const topInset = getTopInset()
 
+  /* ── apply transform to #root so entire UI moves ── */
+  useEffect(() => {
+    const root = document.getElementById('root')
+    if (!root) return
+
+    if (phase === 'idle') {
+      root.style.transform  = ''
+      root.style.transition = ''
+    } else if (phase === 'pulling') {
+      root.style.transition = 'none'
+      root.style.transform  = `translateY(${pull * DAMPING}px)`
+    } else {
+      root.style.transition = `transform 0.52s ${SNAP_EASE}`
+      root.style.transform  = 'translateY(0)'
+    }
+  }, [pull, phase])
+
+  /* ── touch listeners ── */
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
       if (window.scrollY > 0) return
@@ -21,80 +46,97 @@ export default function PullToRefresh() {
       if (!active.current) return
       const dy = e.touches[0].clientY - startY.current
       if (dy > 0) {
-        setPullY(Math.min(dy * 0.5, MAX_PULL))
+        if (phase !== 'pulling') setPhase('pulling')
+        setPull(Math.min(dy, MAX_PULL))
       } else {
-        setPullY(0)
         active.current = false
+        setPhase('idle')
+        setPull(0)
       }
     }
 
     const onEnd = () => {
       if (!active.current) return
       active.current = false
-      setPullY(prev => {
+      setPull(prev => {
         if (prev >= THRESHOLD) {
-          setRefreshing(true)
-          setTimeout(() => window.location.reload(), 600)
-          return prev
+          setPhase('refreshing')
+          setTimeout(() => window.location.reload(), 900)
+        } else {
+          setPhase('releasing')
+          setTimeout(() => { setPhase('idle'); setPull(0) }, 520)
         }
-        return 0
+        return prev
       })
     }
 
     document.addEventListener('touchstart', onStart, { passive: true })
-    document.addEventListener('touchmove', onMove, { passive: true })
-    document.addEventListener('touchend', onEnd, { passive: true })
-
+    document.addEventListener('touchmove',  onMove,  { passive: true })
+    document.addEventListener('touchend',   onEnd,   { passive: true })
     return () => {
       document.removeEventListener('touchstart', onStart)
-      document.removeEventListener('touchmove', onMove)
-      document.removeEventListener('touchend', onEnd)
+      document.removeEventListener('touchmove',  onMove)
+      document.removeEventListener('touchend',   onEnd)
     }
-  }, [])
+  }, [phase])
 
-  if (pullY === 0 && !refreshing) return null
+  if (phase === 'idle') return null
 
-  const progress = Math.min(pullY / MAX_PULL, 1)
+  /* ── indicator position ── */
+  const progress = Math.min(pull / MAX_PULL, 1)
+  // slides in from -56px to 0 as you pull
+  const indicatorY = phase === 'pulling'
+    ? -56 + progress * 56
+    : phase === 'refreshing' ? 0 : -56
 
-  return (
+  const isPulling    = phase === 'pulling'
+  const isRefreshing = phase === 'refreshing'
+
+  const indicator = (
     <div
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 999,
-        display: 'flex',
+        position:       'fixed',
+        top:            topInset + 14,
+        left:           0,
+        right:          0,
+        zIndex:         9999,
+        display:        'flex',
         justifyContent: 'center',
-        paddingTop: pullY + 16,
-        pointerEvents: 'none',
+        pointerEvents:  'none',
+        transform:      `translateY(${indicatorY}px)`,
+        transition:     isPulling ? 'none' : `transform 0.52s ${SNAP_EASE}`,
       }}
     >
       <div
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: '50%',
-          backgroundColor: '#1A1A2E',
-          border: '1.5px solid rgba(168,255,62,0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: progress,
-          transform: `scale(${0.5 + progress * 0.5})`,
-          transition: refreshing ? 'none' : 'transform 0.05s',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.5)',
+          width:           38,
+          height:          38,
+          borderRadius:    '50%',
+          backgroundColor: 'rgba(18, 18, 31, 0.97)',
+          border:          '1.5px solid rgba(168, 255, 62, 0.28)',
+          boxShadow:       '0 4px 24px rgba(0,0,0,0.65)',
+          display:         'flex',
+          alignItems:      'center',
+          justifyContent:  'center',
+          opacity:         progress,
+          transform:       `scale(${0.55 + progress * 0.45})`,
+          transition:      isPulling ? 'none' : `opacity 0.3s ease, transform 0.52s ${SNAP_EASE}`,
         }}
       >
         <RefreshCw
           size={18}
           color="#A8FF3E"
           style={{
-            transform: refreshing ? undefined : `rotate(${pullY * 4}deg)`,
-            animation: refreshing ? 'ptr-spin 0.6s linear infinite' : 'none',
+            transform:  isPulling ? `rotate(${pull * 3}deg)` : undefined,
+            animation:  isRefreshing ? 'ptr-spin 0.65s linear infinite' : 'none',
+            transition: isPulling ? 'none' : 'transform 0.3s ease',
           }}
         />
       </div>
     </div>
   )
+
+  // portal keeps indicator outside #root so it stays viewport-fixed
+  // even when #root has a CSS transform applied
+  return createPortal(indicator, document.body)
 }
