@@ -31,25 +31,29 @@ export default function App() {
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}
     >
       <PullToRefresh />
-      {renderPage()}
 
-      <AnimatePresence>
-        {selectedProduct && (
-          <motion.div
-            key="product-detail"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#0D0D14' }}
-          >
-            <ProductDetail
-              product={selectedProduct}
-              onBack={() => setSelectedProduct(null)}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Only this div is transformed on pull — NavPill stays outside */}
+      <div id="pull-content">
+        {renderPage()}
+
+        <AnimatePresence>
+          {selectedProduct && (
+            <motion.div
+              key="product-detail"
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#0D0D14' }}
+            >
+              <ProductDetail
+                product={selectedProduct}
+                onBack={() => setSelectedProduct(null)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {!selectedProduct && (
         <NavPill activeTab={activeTab} onTabChange={setActiveTab} />

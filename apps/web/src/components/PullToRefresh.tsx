@@ -30,7 +30,7 @@ export default function PullToRefresh() {
 
   /* ── #root stretch transform ── */
   useEffect(() => {
-    const root = document.getElementById('root')
+    const root = document.getElementById('pull-content')
     if (!root) return
 
     if (phase === 'idle') {
