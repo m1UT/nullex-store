@@ -11,6 +11,7 @@ interface TelegramWebApp {
   expand: () => void
   close: () => void
   disableVerticalSwipes: () => void
+  requestFullscreen: () => void
   setBackgroundColor: (color: string) => void
   setHeaderColor: (color: string) => void
   platform: string
@@ -37,6 +38,7 @@ export function initTelegram(): void {
   if (!tg) return
   tg.ready()
   tg.expand()
+  tg.requestFullscreen?.()
   tg.disableVerticalSwipes?.()
   tg.setBackgroundColor?.('#0D0D14')
   tg.setHeaderColor?.('#0D0D14')
