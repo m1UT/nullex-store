@@ -106,11 +106,13 @@ export default function PullToRefresh() {
 
   const progress = Math.min(pull / MAX_PULL, 1)
 
-  // indicator slides in from -56px linearly with pull amount
+  // indicator slides from above the screen top (-60px) to resting position
+  // (just below the safe area). Container is at top:0 (physical screen edge).
+  const restY = topInset + 14
   const indicatorY =
-    phase === 'pulling'  ? -56 + progress * 56
-    : phase === 'spinning' ? 0
-    : -70 // exiting — fly back up
+    phase === 'pulling'  ? -60 + progress * (restY + 60)
+    : phase === 'spinning' ? restY
+    : -70 // exiting — fly back above screen
 
   const indicatorTransition =
     phase === 'pulling'  ? 'none'                  // follows finger, no easing
@@ -121,7 +123,7 @@ export default function PullToRefresh() {
     <div
       style={{
         position:       'fixed',
-        top:            topInset + 14,
+        top:            0,
         left:           0,
         right:          0,
         zIndex:         9999,
