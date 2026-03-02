@@ -5,7 +5,7 @@ import { getTopInset } from '../lib/telegram'
 
 const THRESHOLD  = 70
 const MAX_PULL   = 110
-const DAMPING    = 0.42
+const DAMPING    = 0.70
 const SNAP_EASE  = 'cubic-bezier(0.34, 1.45, 0.64, 1)'
 
 type Phase = 'idle' | 'pulling' | 'refreshing' | 'releasing'
@@ -79,10 +79,14 @@ export default function PullToRefresh() {
       setPull(prev => {
         if (prev >= THRESHOLD) {
           setPhase('refreshing')
-          setTimeout(() => window.location.reload(), 900)
+          // spin ~600ms, then snap indicator up, then reload
+          setTimeout(() => {
+            setPhase('releasing')
+            setTimeout(() => window.location.reload(), 180)
+          }, 600)
         } else {
           setPhase('releasing')
-          setTimeout(() => { setPhase('idle'); setPull(0) }, 520)
+          setTimeout(() => { setPhase('idle'); setPull(0) }, 300)
         }
         return prev
       })
@@ -101,14 +105,25 @@ export default function PullToRefresh() {
   if (phase === 'idle') return null
 
   /* ── indicator position ── */
-  const progress = Math.min(pull / MAX_PULL, 1)
-  // slides in from -56px to 0 as you pull
-  const indicatorY = phase === 'pulling'
-    ? -56 + progress * 56
-    : phase === 'refreshing' ? 0 : -56
-
-  const isPulling    = phase === 'pulling'
+  const progress   = Math.min(pull / MAX_PULL, 1)
+  const isPulling  = phase === 'pulling'
   const isRefreshing = phase === 'refreshing'
+  const isReleasing  = phase === 'releasing'
+
+  // Appear: hidden until ~30% pull, then fast drop-in
+  // Disappear: instant fly-up (releasing after refresh)
+  const indicatorVisible = progress > 0.28 || isRefreshing
+  const indicatorY =
+    isPulling    ? (indicatorVisible ? 0 : -60)   // fast drop once threshold passed
+    : isRefreshing ? 0                             // stay visible while spinning
+    : -60                                          // snap back up immediately
+
+  // transition: fast appear (150ms), instant disappear (100ms)
+  const indicatorTransition =
+    isPulling && !indicatorVisible ? 'none'
+    : isPulling  ? 'transform 0.15s cubic-bezier(0.22, 1, 0.36, 1)'
+    : isReleasing ? 'transform 0.12s ease-in'
+    : 'none'
 
   const indicator = (
     <div
@@ -122,7 +137,7 @@ export default function PullToRefresh() {
         justifyContent: 'center',
         pointerEvents:  'none',
         transform:      `translateY(${indicatorY}px)`,
-        transition:     isPulling ? 'none' : `transform 0.52s ${SNAP_EASE}`,
+        transition:     indicatorTransition,
       }}
     >
       <div
@@ -136,9 +151,6 @@ export default function PullToRefresh() {
           display:         'flex',
           alignItems:      'center',
           justifyContent:  'center',
-          opacity:         progress,
-          transform:       `scale(${0.55 + progress * 0.45})`,
-          transition:      isPulling ? 'none' : `opacity 0.3s ease, transform 0.52s ${SNAP_EASE}`,
         }}
       >
         <RefreshCw
@@ -147,7 +159,6 @@ export default function PullToRefresh() {
           style={{
             transform:  isPulling ? `rotate(${pull * 3}deg)` : undefined,
             animation:  isRefreshing ? 'ptr-spin 0.65s linear infinite' : 'none',
-            transition: isPulling ? 'none' : 'transform 0.3s ease',
           }}
         />
       </div>
