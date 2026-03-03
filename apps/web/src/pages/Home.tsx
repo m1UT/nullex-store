@@ -256,6 +256,7 @@ export default function Home({ onProductClick }: HomeProps) {
             overflowX: 'auto',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
+            touchAction: 'pan-x',
           }}
         >
           {CATEGORIES.map((cat, i) => {

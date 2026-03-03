@@ -22,6 +22,8 @@ export default function PullToRefresh() {
   const [pull, setPull]   = useState(0)
   const [phase, setPhase] = useState<Phase>('idle')
   const startY = useRef(0)
+  const startX = useRef(0)
+  const dirLocked = useRef<'none' | 'h' | 'v'>('none')
   const active = useRef(false)
   // Read --safe-top set by initTelegram() or CSS env(safe-area-inset-top)
   const topInset = parseInt(
@@ -50,6 +52,8 @@ export default function PullToRefresh() {
     const onStart = (e: TouchEvent) => {
       if (isAnyParentScrolled(e)) return
       startY.current = e.touches[0].clientY
+      startX.current = e.touches[0].clientX
+      dirLocked.current = 'none'
       active.current = true
     }
 
@@ -61,7 +65,19 @@ export default function PullToRefresh() {
         setPull(0)
         return
       }
+      const dx = Math.abs(e.touches[0].clientX - startX.current)
       const dy = e.touches[0].clientY - startY.current
+      // lock direction on first significant movement
+      if (dirLocked.current === 'none' && (dx > 4 || Math.abs(dy) > 4)) {
+        dirLocked.current = dx > Math.abs(dy) ? 'h' : 'v'
+      }
+      // horizontal gesture → abort pull-to-refresh entirely
+      if (dirLocked.current === 'h') {
+        active.current = false
+        setPhase('idle')
+        setPull(0)
+        return
+      }
       if (dy > 0) {
         setPhase('pulling')
         setPull(Math.min(dy, MAX_PULL))
