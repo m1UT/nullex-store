@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import {
   Wallet,
-  Check,
   Download,
   Receipt,
   CreditCard,
@@ -24,24 +23,9 @@ export default function Profile() {
     .toUpperCase()
 
   const MENU_ROWS = [
-    {
-      label: 'My Downloads',
-      Icon: Download,
-      iconColor: '#4F6EF7',
-      iconBg: '#1E1E3A',
-    },
-    {
-      label: 'Order History',
-      Icon: Receipt,
-      iconColor: '#A8FF3E',
-      iconBg: '#1A2A1A',
-    },
-    {
-      label: 'Payment Methods',
-      Icon: CreditCard,
-      iconColor: '#9B5CF6',
-      iconBg: '#1E1A2E',
-    },
+    { label: 'My Downloads',     Icon: Download,    iconColor: '#4F6EF7', iconBg: '#1E1E3A' },
+    { label: 'Order History',    Icon: Receipt,     iconColor: '#A8FF3E', iconBg: '#1A2A1A' },
+    { label: 'Payment Methods',  Icon: CreditCard,  iconColor: '#9B5CF6', iconBg: '#1E1A2E' },
   ]
 
   return (
@@ -56,7 +40,7 @@ export default function Profile() {
       {/* Header */}
       <div
         style={{
-          height: 56,
+          height: 64,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -65,7 +49,6 @@ export default function Profile() {
       >
         <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Profile</span>
 
-        {/* Right: balance pill only (no bell — matches concept) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div
             style={{
@@ -84,17 +67,18 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Profile Hero */}
-      <div
-        style={{
-          width: '100%',
-          height: 200,
-          background: 'linear-gradient(160deg, #1B0A3A 0%, #0A1A4A 50%, #0D0D14 100%)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Purple orb */}
+      {/* Profile Hero — avatar + name overlaid inside (concept layout) */}
+      <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
+        {/* Background gradient */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(160deg, #1B0A3A 0%, #0A1A4A 50%, #0D0D14 100%)',
+          }}
+        />
+
+        {/* Purple orb — x:60, y:-60 */}
         <div
           style={{
             position: 'absolute',
@@ -104,9 +88,10 @@ export default function Profile() {
             borderRadius: '50%',
             top: -60,
             left: 60,
+            pointerEvents: 'none',
           }}
         />
-        {/* Blue orb */}
+        {/* Blue orb — x:220, y:40 */}
         <div
           style={{
             position: 'absolute',
@@ -116,22 +101,17 @@ export default function Profile() {
             borderRadius: '50%',
             top: 40,
             left: 220,
+            pointerEvents: 'none',
           }}
         />
-      </div>
 
-      {/* Avatar area */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: -40,
-          position: 'relative',
-        }}
-      >
-        {/* Avatar ring */}
+        {/* Avatar Ring — centered horizontally, top: 60 (y:216 – y:156) */}
         <div
           style={{
+            position: 'absolute',
+            top: 60,
+            left: '50%',
+            transform: 'translateX(-50%)',
             width: 80,
             height: 80,
             borderRadius: 40,
@@ -139,10 +119,8 @@ export default function Profile() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            position: 'relative',
           }}
         >
-          {/* Inner circle */}
           <div
             style={{
               width: 72,
@@ -156,46 +134,32 @@ export default function Profile() {
           >
             <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>{initials}</span>
           </div>
+        </div>
 
-          {/* Pro badge */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              right: 0,
-              width: 22,
-              height: 22,
-              borderRadius: 11,
-              backgroundColor: '#A8FF3E',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Check size={12} color="#0D0D14" strokeWidth={3} />
-          </div>
+        {/* Name Block — top: 140 (avatar bottom = 60+80), height: 56 */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 140,
+            left: 0,
+            right: 0,
+            height: 56,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+          }}
+        >
+          <span style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 700 }}>{displayName}</span>
+          <span style={{ color: '#71717A', fontSize: 13 }}>{displayEmail}</span>
         </div>
       </div>
 
-      {/* Name block */}
+      {/* Stats Row — marginTop: 20 (y:376 – y:356) */}
       <div
         style={{
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-          marginTop: 8,
-          padding: '0 20px',
-        }}
-      >
-        <span style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 700 }}>{displayName}</span>
-        <span style={{ color: '#71717A', fontSize: 13 }}>{displayEmail}</span>
-      </div>
-
-      {/* Stats row */}
-      <div
-        style={{
-          margin: '16px 20px',
+          margin: '20px 20px 0',
           height: 80,
           borderRadius: 24,
           backgroundColor: '#12121F',
@@ -206,38 +170,33 @@ export default function Profile() {
           padding: '0 24px',
         }}
       >
-        {/* Stat 1 */}
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={{ color: '#FFFFFF', fontSize: 22, fontWeight: 700 }}>24</span>
           <span style={{ color: '#71717A', fontSize: 11 }}>Purchases</span>
         </div>
 
-        {/* Divider */}
         <div style={{ width: 1, height: 36, backgroundColor: 'rgba(255,255,255,0.094)' }} />
 
-        {/* Stat 2 */}
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={{ color: '#A8FF3E', fontSize: 22, fontWeight: 700 }}>12</span>
           <span style={{ color: '#71717A', fontSize: 11 }}>Liked</span>
         </div>
 
-        {/* Divider */}
         <div style={{ width: 1, height: 36, backgroundColor: 'rgba(255,255,255,0.094)' }} />
 
-        {/* Stat 3 */}
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={{ color: '#9B5CF6', fontSize: 22, fontWeight: 700 }}>$248</span>
           <span style={{ color: '#71717A', fontSize: 11 }}>Spent</span>
         </div>
       </div>
 
-      {/* Menu list */}
+      {/* Menu List — marginTop: 16 (y:472 – y:456) */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           gap: 10,
-          padding: '0 20px',
+          padding: '16px 20px 0',
         }}
       >
         {MENU_ROWS.map((row) => (
@@ -256,7 +215,6 @@ export default function Profile() {
               cursor: 'pointer',
             }}
           >
-            {/* Left: icon + label */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div
                 style={{
@@ -274,8 +232,6 @@ export default function Profile() {
               </div>
               <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>{row.label}</span>
             </div>
-
-            {/* Right: chevron */}
             <ChevronRight size={16} color="#52525B" />
           </motion.div>
         ))}

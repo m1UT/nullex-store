@@ -34,6 +34,11 @@ interface TelegramWebApp {
       photo_url?: string
     }
   }
+  HapticFeedback: {
+    impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void
+    notificationOccurred: (type: 'error' | 'success' | 'warning') => void
+    selectionChanged: () => void
+  }
   MainButton: {
     text: string
     show: () => void
@@ -75,3 +80,7 @@ export function getTelegramUser() {
 }
 
 export const tg = (): TelegramWebApp | undefined => window.Telegram?.WebApp
+
+export function hapticSelection(): void {
+  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged()
+}

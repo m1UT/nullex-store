@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { House, Heart, ShoppingCart, UserRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { Tab } from '../../App'
-import { getTelegramUser } from '../../lib/telegram'
+import { getTelegramUser, hapticSelection } from '../../lib/telegram'
 
 interface NavPillProps {
   activeTab: Tab
@@ -51,7 +51,7 @@ export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
           return (
             <motion.button
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => { hapticSelection(); onTabChange(tab.id) }}
               whileTap={{ scale: 0.93 }}
               style={{
                 flex: 1,
@@ -105,7 +105,7 @@ export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
 
       {/* Separate Profile button */}
       <motion.button
-        onClick={() => onTabChange('profile')}
+        onClick={() => { hapticSelection(); onTabChange('profile') }}
         whileTap={{ scale: 0.93 }}
         style={{
           width: '56px',
