@@ -303,7 +303,7 @@ export default function Home({ onProductClick }: HomeProps) {
       <div
         style={{
           position: 'sticky',
-          top: 'var(--safe-top, 0px)',
+          top: 'calc(var(--safe-top, 0px) + 8px)',
           zIndex: 10,
           backgroundColor: '#0D0D14',
           paddingTop: 10,
