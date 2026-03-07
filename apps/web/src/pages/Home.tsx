@@ -43,13 +43,18 @@ export default function Home({ onProductClick }: HomeProps) {
 
   useEffect(() => {
     const FADE_RANGE = 60
+    const safeTop = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue('--safe-top') || '0'
+    ) || 0
 
     const update = () => {
       if (!sentinelRef.current) return
       const top = sentinelRef.current.getBoundingClientRect().top
-      setIsSticky(top <= 0)
-      // fade starts FADE_RANGE px before chips hit the top, fully opaque when stuck
-      setFadeOpacity(Math.max(0, Math.min(1, (FADE_RANGE - top) / FADE_RANGE)))
+      // flip to fixed exactly when sentinel reaches the safe-top boundary,
+      // so fixed chips (top: var(--safe-top)) land at the same visual position
+      setIsSticky(top <= safeTop)
+      // fade: 0 when sentinel is FADE_RANGE px above safeTop, 1 when at safeTop
+      setFadeOpacity(Math.max(0, Math.min(1, (FADE_RANGE - (top - safeTop)) / FADE_RANGE)))
     }
 
     window.addEventListener('scroll',    update, { passive: true })
