@@ -63,6 +63,9 @@ export function initTelegram(): void {
 
   tg.ready()
   tg.expand()
+  if (tg.platform === 'android' || tg.platform === 'ios') {
+    try { tg.requestFullscreen?.() } catch (_) { /* unsupported on older clients */ }
+  }
   tg.disableVerticalSwipes?.()
   tg.setBackgroundColor?.('#0D0D14')
   tg.setHeaderColor?.('#0D0D14')
