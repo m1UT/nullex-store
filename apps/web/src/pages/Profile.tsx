@@ -26,7 +26,8 @@ export default function Profile() {
   const displayName = user
     ? [user.first_name, user.last_name].filter(Boolean).join(' ')
     : 'm1UTlucky'
-  const userId = user ? `#${user.id}` : '#000000'
+  const userHandle = user?.username ? `@${user.username}` : '@m1utlucky'
+  const photoUrl = user?.photo_url ?? null
   const [showAllInv, setShowAllInv] = useState(false)
   const [showAllTx, setShowAllTx] = useState(false)
 
@@ -101,12 +102,21 @@ export default function Profile() {
               height: 76,
               borderRadius: 38,
               backgroundColor: '#1A1A2E',
+              overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <UserRound size={36} color="#FFFFFF" />
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt="avatar"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <UserRound size={36} color="#FFFFFF" />
+            )}
           </div>
         </div>
 
@@ -138,7 +148,7 @@ export default function Profile() {
             fontSize: 13,
           }}
         >
-          {userId}
+          {userHandle}
         </div>
       </div>
 
