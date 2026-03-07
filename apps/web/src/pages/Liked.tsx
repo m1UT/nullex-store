@@ -4,7 +4,7 @@ import { Wallet, Heart } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
-const FILTER_CHIPS = ['Все', 'Игры', 'ПО', 'Подписки']
+const FILTER_CHIPS = ['Все', 'Игры', 'ПО', 'Подписки', 'Валюты', 'Курсы']
 
 const LIKED_PRODUCTS = PRODUCTS.slice(0, 4)
 
