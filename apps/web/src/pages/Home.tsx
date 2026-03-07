@@ -305,7 +305,7 @@ export default function Home({ onProductClick }: HomeProps) {
           position: 'sticky',
           top: 0,
           zIndex: 10,
-          paddingTop: 'var(--safe-top, 0px)',
+          paddingTop: `calc(var(--safe-top, 0px) * ${fadeOpacity})`,
           paddingBottom: 12,
           overflow: 'visible',
         }}
