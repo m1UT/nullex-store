@@ -32,37 +32,11 @@ body,
   overscroll-behavior: none;
 }
 
-/* ─── Desktop windowed frame ─────────────────────────────── */
+/* ─── Desktop: fill the TMA panel, no phone frame ─────────── */
 @media (min-width: 640px) {
-  html {
-    background: #07070E;
-  }
-
-  body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100dvh;
-    background: #07070E;
-    background-image:
-      radial-gradient(ellipse 60% 80% at 12% 50%, rgba(79, 110, 247, 0.07) 0%, transparent 100%),
-      radial-gradient(ellipse 55% 65% at 88% 28%, rgba(155, 92, 246, 0.07) 0%, transparent 100%);
-    overflow: hidden;
-  }
-
   #root {
-    width: 390px;
-    height: min(calc(100dvh - 48px), 844px);
-    border-radius: 44px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex-shrink: 0;
-    /* Makes position:fixed children relative to this frame, not the viewport */
-    transform: translateZ(0);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.08),
-      0 0 0 8px rgba(255, 255, 255, 0.02),
-      0 48px 120px rgba(0, 0, 0, 0.75);
+    max-width: 480px;
+    margin: 0 auto;
   }
 }
 /* ──────────────────────────────────────────────────────────── */

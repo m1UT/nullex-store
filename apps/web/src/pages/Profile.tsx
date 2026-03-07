@@ -23,8 +23,10 @@ const TX_ITEMS = [
 
 export default function Profile() {
   const user = getTelegramUser()
-  const username = user?.username ?? 'm1UTlucky'
-  const handle = '@' + (user?.username?.toLowerCase() ?? 'm1utlucky')
+  const displayName = user
+    ? [user.first_name, user.last_name].filter(Boolean).join(' ')
+    : 'm1UTlucky'
+  const userId = user ? `#${user.id}` : '#000000'
   const [showAllInv, setShowAllInv] = useState(false)
   const [showAllTx, setShowAllTx] = useState(false)
 
@@ -121,7 +123,7 @@ export default function Profile() {
             fontWeight: 700,
           }}
         >
-          {username}
+          {displayName}
         </div>
 
         {/* Handle */}
@@ -136,7 +138,7 @@ export default function Profile() {
             fontSize: 13,
           }}
         >
-          {handle}
+          {userId}
         </div>
       </div>
 
