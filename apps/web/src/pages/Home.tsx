@@ -8,6 +8,8 @@ import {
   Gamepad2,
   Code2,
   Crown,
+  Coins,
+  GraduationCap,
   LayoutGrid,
   Sparkles,
 } from 'lucide-react'
@@ -19,6 +21,8 @@ const CATEGORIES = [
   { label: 'Игры',      Icon: Gamepad2 },
   { label: 'ПО',        Icon: Code2 },
   { label: 'Подписки',  Icon: Crown },
+  { label: 'Валюты',    Icon: Coins },
+  { label: 'Курсы',     Icon: GraduationCap },
 ]
 
 interface HomeProps {
@@ -239,12 +243,24 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Categories section */}
-      <div style={{ margin: '0 0 16px', padding: '0 20px' }}>
-        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700, display: 'block', marginBottom: 10 }}>
+      {/* Categories section — label (not sticky) */}
+      <div style={{ padding: '0 20px 10px' }}>
+        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>
           Категории
         </span>
+      </div>
 
+      {/* Sticky chips row */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          backgroundColor: '#0D0D14',
+          paddingBottom: 12,
+          marginBottom: 4,
+        }}
+      >
         {/* Chips row */}
         <div
           style={{
@@ -255,6 +271,7 @@ export default function Home({ onProductClick }: HomeProps) {
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             touchAction: 'pan-x',
+            padding: '0 20px',
           }}
         >
           {CATEGORIES.map((cat, i) => {
