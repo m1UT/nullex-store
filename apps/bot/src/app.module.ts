@@ -5,7 +5,7 @@ import { ProductsModule } from './products/products.module'
 import { UsersModule } from './users/users.module'
 import { OrdersModule } from './orders/orders.module'
 import { PrismaModule } from './prisma/prisma.module'
-import { RedisModule } from './redis/redis.module'
+// import { RedisModule } from './redis/redis.module' // temporarily disabled
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { RedisModule } from './redis/redis.module'
       token: process.env.BOT_TOKEN ?? '',
     }),
     PrismaModule,
-    RedisModule,
+    // RedisModule, // temporarily disabled
     BotModule,
     ProductsModule,
     UsersModule,
