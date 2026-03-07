@@ -6,6 +6,8 @@ node_modules/
 dist/
 build/
 .next/
+# Keep shared package compiled types
+!packages/shared/dist/
 
 # Environment
 .env
