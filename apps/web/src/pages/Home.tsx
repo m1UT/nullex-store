@@ -303,29 +303,35 @@ export default function Home({ onProductClick }: HomeProps) {
       <div
         style={{
           position: 'sticky',
-          top: 'calc(var(--safe-top, 0px) + 8px)',
+          top: 0,
           zIndex: 10,
-          backgroundColor: '#0D0D14',
-          paddingTop: 10,
+          paddingTop: 'var(--safe-top, 0px)',
           paddingBottom: 12,
+          overflow: 'visible',
         }}
       >
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', padding: '0 20px' }}>
+        {/* Background fill (covers safe-top zone too) — fades in with scroll */}
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: `rgba(13,13,20,${fadeOpacity})`,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }} />
+
+        {/* Chips row */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 10, flexWrap: 'nowrap', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', padding: '10px 20px 0' }}>
           {renderChips()}
         </div>
-        {/* Bottom fade — visible only when stuck */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -20,
-            left: 0,
-            right: 0,
-            height: 20,
-            background: 'linear-gradient(to bottom, #0D0D14, transparent)',
-            pointerEvents: 'none',
-            opacity: fadeOpacity,
-          }}
-        />
+
+        {/* Bottom gradient fade */}
+        <div style={{
+          position: 'absolute',
+          bottom: -20, left: 0, right: 0, height: 20,
+          background: `linear-gradient(to bottom, rgba(13,13,20,${fadeOpacity}), transparent)`,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }} />
       </div>
 
       {/* Product grid */}
