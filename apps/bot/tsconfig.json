@@ -13,7 +13,7 @@
     "incremental": true,
     "tsBuildInfoFile": "dist/.tsbuildinfo",
     "paths": {
-      "@nullex/shared": ["../../packages/shared/src/index.ts"]
+      "@nullex/shared": ["../../packages/shared/dist/index.d.ts"]
     }
   },
   "include": ["src/**/*"],

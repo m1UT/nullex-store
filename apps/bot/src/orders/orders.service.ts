@@ -10,7 +10,7 @@ export class OrdersService {
     return this.prisma.order.findMany({
       where: { userId },
       include: { items: { include: { product: true } } },
-    }) as Promise<Order[]>
+    }) as unknown as Promise<Order[]>
   }
 
   async createOrder(userId: number, productIds: number[]): Promise<Order> {
@@ -35,6 +35,6 @@ export class OrdersService {
         },
       },
       include: { items: true },
-    }) as Promise<Order>
+    }) as unknown as Promise<Order>
   }
 }
