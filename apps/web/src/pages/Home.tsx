@@ -31,25 +31,34 @@ interface HomeProps {
 
 export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(1)
+  const [isSticky, setIsSticky] = useState(false)
   const [fadeOpacity, setFadeOpacity] = useState(0)
+  const [chipsH, setChipsH] = useState(52)
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const chipsWrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const FADE_RANGE = 40 // px over which fade goes 0→1
+    if (chipsWrapRef.current) setChipsH(chipsWrapRef.current.offsetHeight)
+  }, [])
 
-    const onScroll = () => {
+  useEffect(() => {
+    const FADE_RANGE = 60
+
+    const update = () => {
       if (!sentinelRef.current) return
       const top = sentinelRef.current.getBoundingClientRect().top
-      // top > 0 → sentinel below viewport top → no fade
-      // top = -FADE_RANGE → fully faded
-      setFadeOpacity(Math.max(0, Math.min(1, -top / FADE_RANGE)))
+      setIsSticky(top <= 0)
+      // fade starts FADE_RANGE px before chips hit the top, fully opaque when stuck
+      setFadeOpacity(Math.max(0, Math.min(1, (FADE_RANGE - top) / FADE_RANGE)))
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true })
-    document.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scroll',    update, { passive: true })
+    window.addEventListener('touchmove', update, { passive: true })
+    document.addEventListener('scroll',  update, { passive: true })
     return () => {
-      window.removeEventListener('scroll', onScroll)
-      document.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll',    update)
+      window.removeEventListener('touchmove', update)
+      document.removeEventListener('scroll',  update)
     }
   }, [])
 
@@ -296,41 +305,59 @@ export default function Home({ onProductClick }: HomeProps) {
         <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Категории</span>
       </div>
 
-      {/* Sentinel — sits right before chips, used only for shadow */}
+      {/* Sentinel — position in document where chips sit */}
       <div ref={sentinelRef} style={{ height: 0 }} />
 
-      {/* Sticky chips */}
+      {/* Safe-area background fill — fixed, covers notch when chips are stuck */}
+      {isSticky && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'min(100vw, 480px)',
+            height: 'var(--safe-top, 0px)',
+            backgroundColor: '#0D0D14',
+            zIndex: 11,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
+      {/* Spacer — keeps layout height while chips are fixed */}
+      {isSticky && <div style={{ height: chipsH }} />}
+
+      {/* Chips container — switches to fixed when stuck */}
       <div
-        style={{
-          position: 'sticky',
-          top: 0,
+        ref={chipsWrapRef}
+        style={isSticky ? {
+          position: 'fixed',
+          top: 'var(--safe-top, 0px)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(100vw, 480px)',
           zIndex: 10,
-          paddingTop: `calc(var(--safe-top, 0px) * ${fadeOpacity})`,
+          backgroundColor: '#0D0D14',
           paddingBottom: 12,
           overflow: 'visible',
+        } : {
+          position: 'relative',
+          paddingBottom: 12,
         }}
       >
-        {/* Background fill (covers safe-top zone too) — fades in with scroll */}
-        <div style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: `rgba(13,13,20,${fadeOpacity})`,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }} />
-
         {/* Chips row */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 10, flexWrap: 'nowrap', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', padding: '10px 20px 0' }}>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', padding: '10px 20px 0' }}>
           {renderChips()}
         </div>
 
-        {/* Bottom gradient fade */}
+        {/* Bottom gradient — fades in as chips approach top */}
         <div style={{
           position: 'absolute',
           bottom: -20, left: 0, right: 0, height: 20,
-          background: `linear-gradient(to bottom, rgba(13,13,20,${fadeOpacity}), transparent)`,
+          background: 'linear-gradient(to bottom, #0D0D14, transparent)',
+          opacity: fadeOpacity,
           pointerEvents: 'none',
-          zIndex: 0,
         }} />
       </div>
 
