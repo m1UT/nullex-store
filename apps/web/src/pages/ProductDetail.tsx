@@ -8,24 +8,23 @@ interface ProductDetailProps {
 }
 
 const TAG_COLORS: Record<string, { text: string; border: string }> = {
-  Racing:     { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
-  Action:     { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
-  Indie:      { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
-  Variable:   { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
-  Display:    { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
-  'Sans-serif':{ text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
-  '3D':       { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
-  'Sci-fi':   { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
-  'Game Ready':{ text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
-  'Lo-Fi':    { text: '#FF6BF8', border: 'rgba(255,107,248,0.25)' },
-  Ambient:    { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
-  'WAV+STEMS':{ text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
-  'Pixel Art':{ text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
-  RPG:        { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
-  Tilemap:    { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
-  Procreate:  { text: '#FF6BF8', border: 'rgba(255,107,248,0.25)' },
-  Photoshop:  { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
-  Brushes:    { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
+  'Шутер':           { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
+  'Мультиплеер':     { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
+  'Инди':            { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
+  'Стратегия':       { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
+  'РПГ':             { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
+  'IDE':             { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
+  'Разработка':      { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
+  'Кроссплатформа':  { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
+  'Безопасность':    { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
+  'VPN':             { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
+  'Пароли':          { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
+  'Стриминг':        { text: '#FF6BF8', border: 'rgba(255,107,248,0.25)' },
+  '4K':              { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
+  'Без рекламы':     { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
+  'Облако':          { text: '#4F6EF7', border: 'rgba(79,110,247,0.25)' },
+  '2TB':             { text: '#A8FF3E', border: 'rgba(168,255,62,0.25)' },
+  'Шифрование':      { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
 }
 
 export default function ProductDetail({ product, onBack }: ProductDetailProps) {
@@ -63,7 +62,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
           <ArrowLeft size={18} color="#FFFFFF" />
         </motion.div>
 
-        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Product Detail</span>
+        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>О товаре</span>
 
         <motion.div
           whileTap={{ scale: 0.92 }}
@@ -154,7 +153,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
             {[1, 2, 3, 4].map((i) => <Star key={i} size={14} color="#A8FF3E" fill="#A8FF3E" />)}
             <Star size={14} color="#71717A" fill="#71717A" />
           </div>
-          <span style={{ color: '#A1A1AA', fontSize: 13 }}>4.8&nbsp;&nbsp;(2,341 reviews)</span>
+          <span style={{ color: '#A1A1AA', fontSize: 13 }}>4.8&nbsp;&nbsp;(2 341 отзыв)</span>
         </div>
 
         {/* Description */}
@@ -195,7 +194,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ color: '#71717A', fontSize: 12 }}>Price</span>
+          <span style={{ color: '#71717A', fontSize: 12 }}>Цена</span>
           <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>{product.price}</span>
         </div>
 
@@ -208,7 +207,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
           }}
         >
           <ShoppingCart size={18} color="#0D0D14" />
-          <span style={{ color: '#0D0D14', fontSize: 15, fontWeight: 700 }}>Add to Cart</span>
+          <span style={{ color: '#0D0D14', fontSize: 15, fontWeight: 700 }}>В корзину</span>
         </motion.button>
       </div>
     </main>

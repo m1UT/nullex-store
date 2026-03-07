@@ -2,8 +2,8 @@ import { motion } from 'framer-motion'
 import {
   Trash2,
   Gamepad2,
-  Type,
-  Music2,
+  Code2,
+  PlayCircle,
   Lock,
   Minus,
   Plus,
@@ -12,8 +12,8 @@ import {
 
 const CART_ITEMS = [
   {
-    name: 'Neon Racer Pro',
-    sub: 'Game · Digital Download',
+    name: 'Neon Arena',
+    sub: 'Игры · Цифровая копия',
     price: '$24.99',
     qty: 1,
     Icon: Gamepad2,
@@ -21,20 +21,20 @@ const CART_ITEMS = [
     thumbBg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)',
   },
   {
-    name: 'Grotesk Variable',
-    sub: 'Font · Commercial License',
-    price: '$19.00',
-    qty: 2,
-    Icon: Type,
-    iconColor: '#A8FF3E',
-    thumbBg: 'linear-gradient(135deg, #0A2A1A 0%, #1A0A3A 100%)',
+    name: 'DevKit Pro',
+    sub: 'ПО · Лицензия на 1 год',
+    price: '$49.99',
+    qty: 1,
+    Icon: Code2,
+    iconColor: '#4F6EF7',
+    thumbBg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)',
   },
   {
-    name: 'Lo-Fi Beats Vol.3',
-    sub: 'Music · WAV + STEMS',
-    price: '$12.00',
+    name: 'StreamPass',
+    sub: 'Подписка · 1 месяц',
+    price: '$9.99',
     qty: 1,
-    Icon: Music2,
+    Icon: PlayCircle,
     iconColor: '#FF6BF8',
     thumbBg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)',
   },
@@ -60,7 +60,7 @@ export default function Cart() {
           padding: '0 20px',
         }}
       >
-        <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>My Cart</span>
+        <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Корзина</span>
 
         <div
           style={{
@@ -225,7 +225,7 @@ export default function Cart() {
             }}
           >
             <Trash2 size={14} color="#FF3B30" />
-            <span style={{ color: '#FF3B30', fontSize: 13, fontWeight: 600 }}>Clear</span>
+            <span style={{ color: '#FF3B30', fontSize: 13, fontWeight: 600 }}>Очистить</span>
           </motion.div>
         </div>
       </div>
@@ -244,20 +244,20 @@ export default function Cart() {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#A1A1AA', fontSize: 14 }}>Subtotal</span>
-          <span style={{ color: '#FFFFFF', fontSize: 14 }}>$55.99</span>
+          <span style={{ color: '#A1A1AA', fontSize: 14 }}>Сумма</span>
+          <span style={{ color: '#FFFFFF', fontSize: 14 }}>$84.97</span>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#A1A1AA', fontSize: 14 }}>Discount (20%)</span>
-          <span style={{ color: '#A8FF3E', fontSize: 14 }}>−$11.20</span>
+          <span style={{ color: '#A1A1AA', fontSize: 14 }}>Скидка (20%)</span>
+          <span style={{ color: '#A8FF3E', fontSize: 14 }}>−$16.99</span>
         </div>
 
         <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.094)' }} />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Total</span>
-          <span style={{ color: '#A8FF3E', fontSize: 18, fontWeight: 700 }}>$44.79</span>
+          <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Итого</span>
+          <span style={{ color: '#A8FF3E', fontSize: 18, fontWeight: 700 }}>$67.98</span>
         </div>
       </div>
 
@@ -279,7 +279,7 @@ export default function Cart() {
           }}
         >
           <Lock size={18} color="#0D0D14" />
-          <span style={{ color: '#0D0D14', fontSize: 16, fontWeight: 700 }}>Checkout Securely</span>
+          <span style={{ color: '#0D0D14', fontSize: 16, fontWeight: 700 }}>Оплатить безопасно</span>
         </motion.button>
       </div>
     </main>

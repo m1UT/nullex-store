@@ -6,9 +6,8 @@ import {
   SlidersHorizontal,
   Zap,
   Gamepad2,
-  Type,
-  Box,
-  Music2,
+  Code2,
+  Crown,
   LayoutGrid,
   Sparkles,
 } from 'lucide-react'
@@ -16,11 +15,10 @@ import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
 const CATEGORIES = [
-  { label: 'All', Icon: LayoutGrid },
-  { label: 'Games', Icon: Gamepad2 },
-  { label: 'Fonts', Icon: Type },
-  { label: '3D Assets', Icon: Box },
-  { label: 'Music', Icon: Music2 },
+  { label: 'Все',       Icon: LayoutGrid },
+  { label: 'Игры',      Icon: Gamepad2 },
+  { label: 'ПО',        Icon: Code2 },
+  { label: 'Подписки',  Icon: Crown },
 ]
 
 interface HomeProps {
@@ -99,7 +97,7 @@ export default function Home({ onProductClick }: HomeProps) {
         >
           <Search size={18} color="#71717A" />
           <span style={{ color: '#52525B', fontSize: 14 }}>
-            Search games, fonts, templates...
+            Поиск игр, ПО, подписок...
           </span>
         </div>
 
@@ -178,7 +176,7 @@ export default function Home({ onProductClick }: HomeProps) {
             }}
           >
             <Zap size={12} color="#A8FF3E" fill="#A8FF3E" />
-            <span style={{ color: '#A8FF3E', fontSize: 10, fontWeight: 700 }}>LIMITED OFFER</span>
+            <span style={{ color: '#A8FF3E', fontSize: 10, fontWeight: 700 }}>СПЕЦПРЕДЛОЖЕНИЕ</span>
           </div>
 
           {/* Main headline */}
@@ -191,12 +189,12 @@ export default function Home({ onProductClick }: HomeProps) {
               whiteSpace: 'pre-line',
             }}
           >
-            {'20% Off Your\nFirst Order'}
+            {'−20% на\nпервый заказ'}
           </div>
 
           {/* Sub text */}
           <span style={{ color: 'rgba(255,255,255,0.627)', fontSize: 12 }}>
-            On all digital goods today
+            На всё цифровое ПО сегодня
           </span>
         </div>
 
@@ -236,7 +234,7 @@ export default function Home({ onProductClick }: HomeProps) {
               cursor: 'pointer',
             }}
           >
-            <span style={{ color: '#0D0D14', fontSize: 12, fontWeight: 700 }}>Shop Now</span>
+            <span style={{ color: '#0D0D14', fontSize: 12, fontWeight: 700 }}>Купить</span>
           </motion.div>
         </div>
       </div>
@@ -244,7 +242,7 @@ export default function Home({ onProductClick }: HomeProps) {
       {/* Categories section */}
       <div style={{ margin: '0 0 16px', padding: '0 20px' }}>
         <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700, display: 'block', marginBottom: 10 }}>
-          Categories
+          Категории
         </span>
 
         {/* Chips row */}

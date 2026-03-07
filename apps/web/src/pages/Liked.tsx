@@ -4,7 +4,7 @@ import { Wallet, Heart } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
-const FILTER_CHIPS = ['All', 'Games', 'Fonts', '3D']
+const FILTER_CHIPS = ['Все', 'Игры', 'ПО', 'Подписки']
 
 const LIKED_PRODUCTS = PRODUCTS.slice(0, 4)
 
@@ -34,7 +34,7 @@ export default function Liked({ onProductClick }: LikedProps) {
           padding: '0 20px',
         }}
       >
-        <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Liked</span>
+        <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Избранное</span>
 
         {/* Right: balance pill only (no bell — matches concept) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -193,7 +193,7 @@ export default function Liked({ onProductClick }: LikedProps) {
                     cursor: 'pointer',
                   }}
                 >
-                  <span style={{ color: '#0D0D14', fontSize: 11, fontWeight: 700 }}>+ Cart</span>
+                  <span style={{ color: '#0D0D14', fontSize: 11, fontWeight: 700 }}>В корзину</span>
                 </motion.div>
               </div>
             </div>

@@ -1,24 +1,24 @@
 import { useState } from 'react'
-import { Wallet, Gamepad2, Type, Box, Music, ExternalLink, UserRound } from 'lucide-react'
+import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
 
 const INVENTORY_ITEMS = [
-  { id: 1, name: 'Neon Racer Pro',    tag: 'Game · Indie',       Icon: Gamepad2, iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #1A3A1A 0%, #0D2A14 100%)' },
-  { id: 2, name: 'Grotesk Variable',  tag: 'Font · Display',     Icon: Type,     iconColor: '#FF6BF8', iconBg: 'linear-gradient(135deg, #2A1A0A 0%, #1A0A00 100%)' },
-  { id: 3, name: 'SciFi Asset Pack',  tag: '3D Assets · Sci-fi', Icon: Box,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A1A3A 0%, #0A0A2E 100%)' },
-  { id: 4, name: 'Lo-Fi Beats Vol.3', tag: 'Music · Ambient',    Icon: Music,    iconColor: '#9B5CF6', iconBg: 'linear-gradient(135deg, #2A0A1A 0%, #1A0010 100%)' },
-  { id: 5, name: 'Pixel Dungeon X',   tag: 'Game · Roguelike',   Icon: Gamepad2, iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #1A3A1A 0%, #0D2A14 100%)' },
-  { id: 6, name: 'Mono Display Pro',  tag: 'Font · Monospace',   Icon: Type,     iconColor: '#FF6BF8', iconBg: 'linear-gradient(135deg, #2A1A0A 0%, #1A0A00 100%)' },
+  { id: 1, name: 'Neon Arena',     tag: 'Игры · Шутер',        Icon: Gamepad2,   iconColor: '#9B5CF6', iconBg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)' },
+  { id: 2, name: 'Shadow Tactics', tag: 'Игры · Стратегия',    Icon: Sword,      iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A2A1A 0%, #1A0A3A 100%)' },
+  { id: 3, name: 'DevKit Pro',     tag: 'ПО · Разработка',     Icon: Code2,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)' },
+  { id: 4, name: 'VaultGuard',     tag: 'ПО · Безопасность',   Icon: Shield,     iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A1A0A 0%, #1A0A2A 100%)' },
+  { id: 5, name: 'StreamPass',     tag: 'Подписка · Стриминг', Icon: PlayCircle, iconColor: '#FF6BF8', iconBg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)' },
+  { id: 6, name: 'CloudMax',       tag: 'Подписка · Хранилище',Icon: Cloud,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A1A 0%, #0A1A2A 100%)' },
 ]
 
 const TX_ITEMS = [
-  { id: 1, name: 'Пополнение баланса', Icon: Wallet,   iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: 'Mar 01, 2026', amount: '+$50.00',  positive: true  },
-  { id: 2, name: 'Neon Racer Pro',     Icon: Gamepad2, iconColor: '#A8FF3E', iconBg: '#1A3A1A', date: 'Feb 28, 2026', amount: '−$24.99',  positive: false },
-  { id: 3, name: 'Grotesk Variable',   Icon: Type,     iconColor: '#FF6BF8', iconBg: '#2A1A0A', date: 'Feb 14, 2026', amount: '−$19.00',  positive: false },
-  { id: 4, name: 'Пополнение баланса', Icon: Wallet,   iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: 'Feb 10, 2026', amount: '+$100.00', positive: true  },
-  { id: 5, name: 'SciFi Asset Pack',   Icon: Box,      iconColor: '#4F6EF7', iconBg: '#1A1A3A', date: 'Jan 03, 2026', amount: '−$49.00',  positive: false },
-  { id: 6, name: 'Pixel Dungeon X',   Icon: Gamepad2, iconColor: '#A8FF3E', iconBg: '#1A3A1A', date: 'Dec 22, 2025', amount: '−$18.00',  positive: false },
-  { id: 7, name: 'Пополнение баланса', Icon: Wallet,   iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: 'Dec 15, 2025', amount: '+$200.00', positive: true  },
+  { id: 1, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '01 мар 2026', amount: '+$50.00',  positive: true  },
+  { id: 2, name: 'Neon Arena',         Icon: Gamepad2,   iconColor: '#9B5CF6', iconBg: '#1B0A3A', date: '28 фев 2026', amount: '−$24.99',  positive: false },
+  { id: 3, name: 'DevKit Pro',         Icon: Code2,      iconColor: '#4F6EF7', iconBg: '#1A0A0A', date: '14 фев 2026', amount: '−$49.99',  positive: false },
+  { id: 4, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '10 фев 2026', amount: '+$100.00', positive: true  },
+  { id: 5, name: 'StreamPass',         Icon: PlayCircle, iconColor: '#FF6BF8', iconBg: '#0A1A2A', date: '20 янв 2026', amount: '−$9.99',   positive: false },
+  { id: 6, name: 'Shadow Tactics',     Icon: Sword,      iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '22 дек 2025', amount: '−$19.99',  positive: false },
+  { id: 7, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '15 дек 2025', amount: '+$200.00', positive: true  },
 ]
 
 export default function Profile() {

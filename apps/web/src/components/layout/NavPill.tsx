@@ -10,9 +10,9 @@ interface NavPillProps {
 }
 
 const MAIN_TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
-  { id: 'home',  label: 'HOME',  Icon: House },
-  { id: 'liked', label: 'LIKED', Icon: Heart },
-  { id: 'cart',  label: 'CART',  Icon: ShoppingCart },
+  { id: 'home',  label: 'ГЛАВНАЯ',    Icon: House },
+  { id: 'liked', label: 'ИЗБРАННОЕ',  Icon: Heart },
+  { id: 'cart',  label: 'КОРЗИНА',    Icon: ShoppingCart },
 ]
 
 export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
