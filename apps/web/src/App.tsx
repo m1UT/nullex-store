@@ -28,7 +28,7 @@ export default function App() {
 
   return (
     <div
-      style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}
+      style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflow: 'clip' }}
     >
       <PullToRefresh />
 

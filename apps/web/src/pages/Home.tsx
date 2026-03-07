@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   Wallet,
@@ -31,6 +31,55 @@ interface HomeProps {
 
 export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(1)
+  const [fadeOpacity, setFadeOpacity] = useState(0)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const FADE_RANGE = 40 // px over which fade goes 0→1
+
+    const onScroll = () => {
+      if (!sentinelRef.current) return
+      const top = sentinelRef.current.getBoundingClientRect().top
+      // top > 0 → sentinel below viewport top → no fade
+      // top = -FADE_RANGE → fully faded
+      setFadeOpacity(Math.max(0, Math.min(1, -top / FADE_RANGE)))
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      document.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
+  const renderChips = useCallback(() => CATEGORIES.map((cat, i) => {
+    const isActive = i === activeCategory
+    return (
+      <motion.div
+        key={cat.label}
+        whileTap={{ scale: 0.94 }}
+        onClick={() => setActiveCategory(i)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          flexShrink: 0,
+          borderRadius: 999,
+          padding: '8px 14px',
+          cursor: 'pointer',
+          background: isActive ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)' : 'transparent',
+          backgroundColor: isActive ? undefined : '#1A1A2E',
+          border: isActive ? 'none' : '1px solid rgba(255,255,255,0.125)',
+        }}
+      >
+        <cat.Icon size={14} color={isActive ? '#FFFFFF' : '#A1A1AA'} />
+        <span style={{ color: isActive ? '#FFFFFF' : '#A1A1AA', fontSize: 12, fontWeight: 600 }}>
+          {cat.label}
+        </span>
+      </motion.div>
+    )
+  }), [activeCategory])
 
   return (
     <main
@@ -39,7 +88,6 @@ export default function Home({ onProductClick }: HomeProps) {
         minHeight: '100dvh',
         paddingTop: 'var(--safe-top)',
         paddingBottom: 96,
-        overflowX: 'hidden',
       }}
     >
       {/* Header */}
@@ -243,73 +291,41 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Categories section — label (not sticky) */}
+      {/* Categories label — scrolls away normally */}
       <div style={{ padding: '0 20px 10px' }}>
-        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>
-          Категории
-        </span>
+        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Категории</span>
       </div>
 
-      {/* Sticky chips row */}
+      {/* Sentinel — sits right before chips, used only for shadow */}
+      <div ref={sentinelRef} style={{ height: 0 }} />
+
+      {/* Sticky chips */}
       <div
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 10,
           backgroundColor: '#0D0D14',
+          paddingTop: 10,
           paddingBottom: 12,
-          marginBottom: 4,
         }}
       >
-        {/* Chips row */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', padding: '0 20px' }}>
+          {renderChips()}
+        </div>
+        {/* Bottom fade — visible only when stuck */}
         <div
           style={{
-            display: 'flex',
-            gap: 10,
-            flexWrap: 'nowrap',
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            touchAction: 'pan-x',
-            padding: '0 20px',
+            position: 'absolute',
+            bottom: -20,
+            left: 0,
+            right: 0,
+            height: 20,
+            background: 'linear-gradient(to bottom, #0D0D14, transparent)',
+            pointerEvents: 'none',
+            opacity: fadeOpacity,
           }}
-        >
-          {CATEGORIES.map((cat, i) => {
-            const isActive = i === activeCategory
-            return (
-              <motion.div
-                key={cat.label}
-                whileTap={{ scale: 0.94 }}
-                onClick={() => setActiveCategory(i)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  flexShrink: 0,
-                  borderRadius: 999,
-                  padding: '8px 14px',
-                  cursor: 'pointer',
-                  background: isActive
-                    ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)'
-                    : 'transparent',
-                  backgroundColor: isActive ? undefined : '#1A1A2E',
-                  border: isActive ? 'none' : '1px solid rgba(255,255,255,0.125)',
-                }}
-              >
-                <cat.Icon size={14} color={isActive ? '#FFFFFF' : '#A1A1AA'} />
-                <span
-                  style={{
-                    color: isActive ? '#FFFFFF' : '#A1A1AA',
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
-                >
-                  {cat.label}
-                </span>
-              </motion.div>
-            )
-          })}
-        </div>
+        />
       </div>
 
       {/* Product grid */}
