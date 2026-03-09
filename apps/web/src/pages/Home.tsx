@@ -275,6 +275,7 @@ export default function Home({ onProductClick }: HomeProps) {
             maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
             opacity: isSticky ? 1 : 0,
+            transition: 'opacity 0.25s ease',
             pointerEvents: 'none',
             zIndex: 0,
           }}
