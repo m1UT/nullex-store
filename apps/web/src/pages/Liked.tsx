@@ -1,10 +1,16 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wallet, Heart } from 'lucide-react'
+import { Wallet, Heart, LayoutGrid, Gamepad2, Type, Box, Music2 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
-const FILTER_CHIPS = ['Все', 'Игры', 'ПО', 'Подписки', 'Валюты', 'Курсы']
+const FILTER_CHIPS = [
+  { label: 'All',       Icon: LayoutGrid },
+  { label: 'Games',     Icon: Gamepad2 },
+  { label: 'Fonts',     Icon: Type },
+  { label: '3D Assets', Icon: Box },
+  { label: 'Music',     Icon: Music2 },
+]
 
 const LIKED_PRODUCTS = PRODUCTS.slice(0, 4)
 
@@ -68,33 +74,30 @@ export default function Liked({ onProductClick }: LikedProps) {
           msOverflowStyle: 'none',
         }}
       >
-        {FILTER_CHIPS.map((chip, i) => {
+        {FILTER_CHIPS.map(({ label, Icon }, i) => {
           const isActive = i === activeFilter
           return (
             <motion.div
-              key={chip}
+              key={label}
               whileTap={{ scale: 0.93 }}
               onClick={() => setActiveFilter(i)}
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
                 flexShrink: 0,
                 borderRadius: 999,
-                padding: '8px 18px',
+                padding: '8px 14px',
                 cursor: 'pointer',
-                background: isActive
-                  ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)'
-                  : 'transparent',
-                backgroundColor: isActive ? undefined : '#1A1A2E',
-                border: isActive ? 'none' : '1px solid rgba(255,255,255,0.125)',
+                background: isActive ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)' : 'rgba(255,255,255,0.06)',
+                backdropFilter: isActive ? undefined : 'blur(12px)',
+                WebkitBackdropFilter: isActive ? undefined : 'blur(12px)',
+                border: isActive ? 'none' : '1px solid rgba(255,255,255,0.09)',
               }}
             >
-              <span
-                style={{
-                  color: isActive ? '#FFFFFF' : '#71717A',
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                {chip}
+              <Icon size={14} color={isActive ? '#FFFFFF' : '#A1A1AA'} />
+              <span style={{ color: isActive ? '#FFFFFF' : '#A1A1AA', fontSize: 12, fontWeight: 600 }}>
+                {label}
               </span>
             </motion.div>
           )
