@@ -153,16 +153,18 @@ export default function Home({ onProductClick }: HomeProps) {
           position: 'relative',
         }}
       >
-        {/* Glass background — fades in smoothly before snap */}
+        {/* Glass background — extends below wrapper and fades via mask so blur itself dissolves */}
         <div
           style={{
             position: 'absolute',
-            inset: 0,
+            top: 0, left: 0, right: 0,
+            height: 'calc(100% + 32px)',
             backgroundColor: 'rgba(13,13,20,0.72)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-
-            opacity: fadeOpacity,
+            maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+            opacity: isSticky ? 1 : 0,
             pointerEvents: 'none',
             zIndex: 0,
           }}
@@ -174,7 +176,7 @@ export default function Home({ onProductClick }: HomeProps) {
             display: 'flex',
             flexDirection: 'row',
             gap: 12,
-            padding: isSticky ? '8px 20px 8px' : '16px 20px 8px',
+            padding: '8px 20px 8px',
             position: 'relative',
             zIndex: 1,
           }}
@@ -234,14 +236,6 @@ export default function Home({ onProductClick }: HomeProps) {
           {renderChips()}
         </div>
 
-        {/* Bottom gradient — fades in as block approaches top */}
-        <div style={{
-          position: 'absolute',
-          bottom: -20, left: 0, right: 0, height: 20,
-          background: 'linear-gradient(to bottom, rgba(13,13,20,0.72), transparent)',
-          opacity: fadeOpacity,
-          pointerEvents: 'none',
-        }} />
       </div>
 
       {/* Promo Banner */}
