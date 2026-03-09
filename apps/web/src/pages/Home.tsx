@@ -30,7 +30,6 @@ interface HomeProps {
 export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(1)
   const [isSticky, setIsSticky] = useState(false)
-  const [fadeOpacity, setFadeOpacity] = useState(0)
   const [stickyH, setStickyH] = useState(140)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const stickyWrapRef = useRef<HTMLDivElement>(null)
@@ -40,7 +39,6 @@ export default function Home({ onProductClick }: HomeProps) {
   }, [])
 
   useEffect(() => {
-    const FADE_RANGE = 60
     const safeTop = parseInt(
       getComputedStyle(document.documentElement).getPropertyValue('--safe-top') || '0'
     ) || 0
@@ -49,7 +47,6 @@ export default function Home({ onProductClick }: HomeProps) {
       if (!sentinelRef.current) return
       const top = sentinelRef.current.getBoundingClientRect().top
       setIsSticky(top <= safeTop)
-      setFadeOpacity(Math.max(0, Math.min(1, (FADE_RANGE - (top - safeTop)) / FADE_RANGE)))
     }
 
     window.addEventListener('scroll',    update, { passive: true })

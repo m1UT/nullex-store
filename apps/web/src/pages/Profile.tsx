@@ -1,15 +1,18 @@
-import { useState } from 'react'
-import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
 
 const INVENTORY_ITEMS = [
-  { id: 1, name: 'Neon Arena',     tag: 'Игры · Шутер',        Icon: Gamepad2,   iconColor: '#9B5CF6', iconBg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)' },
-  { id: 2, name: 'Shadow Tactics', tag: 'Игры · Стратегия',    Icon: Sword,      iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A2A1A 0%, #1A0A3A 100%)' },
-  { id: 3, name: 'DevKit Pro',     tag: 'ПО · Разработка',     Icon: Code2,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)' },
-  { id: 4, name: 'VaultGuard',     tag: 'ПО · Безопасность',   Icon: Shield,     iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A1A0A 0%, #1A0A2A 100%)' },
-  { id: 5, name: 'StreamPass',     tag: 'Подписка · Стриминг', Icon: PlayCircle, iconColor: '#FF6BF8', iconBg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)' },
-  { id: 6, name: 'CloudMax',       tag: 'Подписка · Хранилище',Icon: Cloud,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A1A 0%, #0A1A2A 100%)' },
+  { id: 1, name: 'Neon Arena',     tag: 'Игры · Шутер',        Icon: Gamepad2,   iconColor: '#9B5CF6', iconBg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)', code: 'NA-PRO-X7K2-M9QW-4521' },
+  { id: 2, name: 'Shadow Tactics', tag: 'Игры · Стратегия',    Icon: Sword,      iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A2A1A 0%, #1A0A3A 100%)', code: 'ST-ACT-K3P9-W2NQ-8834' },
+  { id: 3, name: 'DevKit Pro',     tag: 'ПО · Разработка',     Icon: Code2,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)', code: 'DK-PRO-Z1R7-T4XC-6612' },
+  { id: 4, name: 'VaultGuard',     tag: 'ПО · Безопасность',   Icon: Shield,     iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A1A0A 0%, #1A0A2A 100%)', code: 'VG-SEC-L8M3-Q5KV-3390' },
+  { id: 5, name: 'StreamPass',     tag: 'Подписка · Стриминг', Icon: PlayCircle, iconColor: '#FF6BF8', iconBg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)', code: 'SP-STR-B2H6-N9JX-7745' },
+  { id: 6, name: 'CloudMax',       tag: 'Подписка · Хранилище',Icon: Cloud,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A1A 0%, #0A1A2A 100%)', code: 'CM-CLD-Y4W1-F7GD-2208' },
 ]
+
+type InventoryItem = typeof INVENTORY_ITEMS[number]
 
 const TX_ITEMS = [
   { id: 1, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '01 мар 2026', amount: '+$50.00',  positive: true  },
@@ -30,11 +33,26 @@ export default function Profile() {
   const photoUrl = user?.photo_url ?? null
   const [showAllInv, setShowAllInv] = useState(false)
   const [showAllTx, setShowAllTx] = useState(false)
+  const [activationItem, setActivationItem] = useState<InventoryItem | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = activationItem ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [activationItem])
+
+  const handleCopy = (code: string) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
   const visibleInv = showAllInv ? INVENTORY_ITEMS : INVENTORY_ITEMS.slice(0, 4)
   const visibleTx  = showAllTx  ? TX_ITEMS         : TX_ITEMS.slice(0, 4)
 
   return (
+    <>
     <main
       style={{
         backgroundColor: '#0D0D14',
@@ -254,7 +272,9 @@ export default function Profile() {
                     <span style={{ color: '#71717A', fontSize: 11 }}>{item.tag}</span>
                   </div>
                 </div>
-                <div
+                <motion.div
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => { setActivationItem(item); setCopied(false) }}
                   style={{
                     width: 36,
                     height: 36,
@@ -265,10 +285,11 @@ export default function Profile() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
+                    cursor: 'pointer',
                   }}
                 >
                   <ExternalLink size={16} color="#9B5CF6" />
-                </div>
+                </motion.div>
               </div>
               {i < visibleInv.length - 1 && (
                 <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
@@ -388,5 +409,122 @@ export default function Profile() {
         </div>
       </div>
     </main>
+
+      {/* ── Code Activation Modal ── */}
+      <AnimatePresence>
+        {activationItem && (
+          <>
+            {/* Overlay — flex container that centers the modal */}
+            <motion.div
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setActivationItem(null)}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 110,
+                backgroundColor: 'rgba(13,13,20,0.67)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 24px',
+              }}
+            >
+            {/* Modal card */}
+            <motion.div
+              key="modal"
+              initial={{ scale: 0.88, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.88, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+              onClick={e => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: 360,
+                backgroundColor: '#12121F',
+                borderRadius: 24,
+                border: '1px solid rgba(255,255,255,0.085)',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
+                padding: 20,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Код активации</span>
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setActivationItem(null)}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: 'rgba(255,255,255,0.059)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <X size={16} color="#A1A1AA" />
+                </motion.div>
+              </div>
+
+              {/* Code row */}
+              <div
+                style={{
+                  height: 52,
+                  borderRadius: 14,
+                  backgroundColor: '#1A1A2E',
+                  border: '1px solid rgba(255,255,255,0.071)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 16px',
+                }}
+              >
+                <span style={{ color: '#A1A1AA', fontSize: 13, fontWeight: 600, letterSpacing: 1 }}>
+                  {activationItem.code}
+                </span>
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleCopy(activationItem.code)}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    backgroundColor: 'rgba(168,255,62,0.102)',
+                    border: '1px solid rgba(168,255,62,0.251)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                  }}
+                >
+                  {copied
+                    ? <Check size={16} color="#A8FF3E" />
+                    : <Copy size={16} color="#A8FF3E" />
+                  }
+                </motion.div>
+              </div>
+
+              {/* Hint */}
+              <span style={{ color: '#52525B', fontSize: 12 }}>
+                Скопируйте код и введите его при активации продукта
+              </span>
+            </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
