@@ -134,22 +134,23 @@ export default function Home({ onProductClick }: HomeProps) {
       {/* Sentinel — placed before search+chips, triggers sticky */}
       <div ref={sentinelRef} style={{ height: 0 }} />
 
-      {/* Safe-area background fill — fixed, covers notch when stuck */}
-      {isSticky && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 'min(100vw, 480px)',
-            height: 'var(--safe-top, 0px)',
-            backgroundColor: '#0D0D14',
-            zIndex: 11,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+      {/* Safe-area background fill — always fixed, fades in with fadeOpacity */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(100vw, 480px)',
+          height: 'var(--safe-top, 0px)',
+          backgroundColor: 'rgba(13,13,20,0.72)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          zIndex: 11,
+          pointerEvents: 'none',
+          opacity: fadeOpacity,
+        }}
+      />
 
       {/* Spacer — preserves layout height when search+chips are fixed */}
       {isSticky && <div style={{ height: stickyH }} />}
@@ -164,19 +165,35 @@ export default function Home({ onProductClick }: HomeProps) {
           transform: 'translateX(-50%)',
           width: 'min(100vw, 480px)',
           zIndex: 10,
-          backgroundColor: '#0D0D14',
           overflow: 'visible',
         } : {
           position: 'relative',
         }}
       >
+        {/* Glass background — fades in smoothly before snap */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'rgba(13,13,20,0.72)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            opacity: fadeOpacity,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+
         {/* Search row */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'row',
             gap: 12,
-            padding: '16px 20px 8px',
+            padding: isSticky ? '8px 20px 8px' : '16px 20px 8px',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <div
@@ -227,6 +244,8 @@ export default function Home({ onProductClick }: HomeProps) {
             msOverflowStyle: 'none',
             touchAction: 'pan-x',
             padding: '4px 20px 12px',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           {renderChips()}
@@ -236,7 +255,7 @@ export default function Home({ onProductClick }: HomeProps) {
         <div style={{
           position: 'absolute',
           bottom: -20, left: 0, right: 0, height: 20,
-          background: 'linear-gradient(to bottom, #0D0D14, transparent)',
+          background: 'linear-gradient(to bottom, rgba(13,13,20,0.72), transparent)',
           opacity: fadeOpacity,
           pointerEvents: 'none',
         }} />
