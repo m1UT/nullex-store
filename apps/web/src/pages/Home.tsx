@@ -127,115 +127,6 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Sentinel — placed before search+chips, triggers sticky */}
-      <div ref={sentinelRef} style={{ height: 0 }} />
-
-      {/* Spacer — preserves layout height when search+chips are fixed */}
-      {isSticky && <div style={{ height: stickyH }} />}
-
-      {/* Sticky wrapper: search row + chips; extends to top:0 to cover safe-area seamlessly */}
-      <div
-        ref={stickyWrapRef}
-        style={isSticky ? {
-          position: 'fixed',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'min(100vw, 480px)',
-          paddingTop: 'var(--safe-top, 0px)',
-          zIndex: 10,
-          overflow: 'visible',
-        } : {
-          position: 'relative',
-        }}
-      >
-        {/* Glass background — extends below wrapper and fades via mask so blur itself dissolves */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0,
-            height: 'calc(100% + 32px)',
-            backgroundColor: 'rgba(13,13,20,0.55)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
-            opacity: isSticky ? 1 : 0,
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-
-        {/* Search row */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 12,
-            padding: '8px 20px 8px',
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              height: 48,
-              backgroundColor: 'rgba(255,255,255,0.06)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              borderRadius: 24,
-              padding: '0 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              border: '1px solid rgba(255,255,255,0.09)',
-            }}
-          >
-            <Search size={18} color="#71717A" />
-            <span style={{ color: '#52525B', fontSize: 14 }}>
-              Поиск игр, ПО, подписок...
-            </span>
-          </div>
-
-          <motion.div
-            whileTap={{ scale: 0.92 }}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
-          >
-            <SlidersHorizontal size={18} color="#FFFFFF" />
-          </motion.div>
-        </div>
-
-        {/* Chips row */}
-        <div
-          style={{
-            display: 'flex',
-            gap: 10,
-            flexWrap: 'nowrap',
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            touchAction: 'pan-x',
-            padding: '4px 20px 12px',
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          {renderChips()}
-        </div>
-
-      </div>
-
       {/* Promo Banner */}
       <div
         style={{
@@ -348,6 +239,115 @@ export default function Home({ onProductClick }: HomeProps) {
             <span style={{ color: '#0D0D14', fontSize: 12, fontWeight: 700 }}>Купить</span>
           </motion.div>
         </div>
+      </div>
+
+      {/* Sentinel — placed before search+chips, triggers sticky */}
+      <div ref={sentinelRef} style={{ height: 0 }} />
+
+      {/* Spacer — preserves layout height when search+chips are fixed */}
+      {isSticky && <div style={{ height: stickyH }} />}
+
+      {/* Sticky wrapper: search row + chips; extends to top:0 to cover safe-area seamlessly */}
+      <div
+        ref={stickyWrapRef}
+        style={isSticky ? {
+          position: 'fixed',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(100vw, 480px)',
+          paddingTop: 'var(--safe-top, 0px)',
+          zIndex: 10,
+          overflow: 'visible',
+        } : {
+          position: 'relative',
+        }}
+      >
+        {/* Glass background — extends below wrapper and fades via mask so blur itself dissolves */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0,
+            height: 'calc(100% + 32px)',
+            backgroundColor: 'rgba(13,13,20,0.55)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+            opacity: isSticky ? 1 : 0,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+
+        {/* Search row */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 12,
+            padding: '8px 20px 8px',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              height: 48,
+              backgroundColor: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              borderRadius: 24,
+              padding: '0 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              border: '1px solid rgba(255,255,255,0.09)',
+            }}
+          >
+            <Search size={18} color="#71717A" />
+            <span style={{ color: '#52525B', fontSize: 14 }}>
+              Поиск игр, ПО, подписок...
+            </span>
+          </div>
+
+          <motion.div
+            whileTap={{ scale: 0.92 }}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            <SlidersHorizontal size={18} color="#FFFFFF" />
+          </motion.div>
+        </div>
+
+        {/* Chips row */}
+        <div
+          style={{
+            display: 'flex',
+            gap: 10,
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            touchAction: 'pan-x',
+            padding: '4px 20px 12px',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {renderChips()}
+        </div>
+
       </div>
 
       {/* Product grid */}
