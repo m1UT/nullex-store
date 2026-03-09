@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
@@ -35,19 +35,15 @@ export default function Profile() {
   const [showAllTx, setShowAllTx] = useState(false)
   const [activationItem, setActivationItem] = useState<InventoryItem | null>(null)
   const [copied, setCopied] = useState(false)
-  const savedScrollY = useRef(0)
 
   useEffect(() => {
-    if (activationItem) {
-      savedScrollY.current = window.scrollY
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${savedScrollY.current}px`
-      document.body.style.width = '100%'
-    } else {
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.width = ''
-      window.scrollTo(0, savedScrollY.current)
+    if (!activationItem) return
+    const prevent = (e: Event) => e.preventDefault()
+    document.addEventListener('wheel',     prevent, { passive: false })
+    document.addEventListener('touchmove', prevent, { passive: false })
+    return () => {
+      document.removeEventListener('wheel',     prevent)
+      document.removeEventListener('touchmove', prevent)
     }
   }, [activationItem])
 
