@@ -159,7 +159,7 @@ export default function Home({ onProductClick }: HomeProps) {
             position: 'absolute',
             top: 0, left: 0, right: 0,
             height: 'calc(100% + 32px)',
-            backgroundColor: 'rgba(13,13,20,0.88)',
+            backgroundColor: 'rgba(13,13,20,0.55)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
