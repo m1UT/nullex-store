@@ -355,11 +355,6 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Categories label */}
-      <div style={{ padding: '0 20px 10px' }}>
-        <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Категории</span>
-      </div>
-
       {/* Product grid */}
       <div
         style={{
