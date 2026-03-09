@@ -33,12 +33,12 @@ export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(1)
   const [isSticky, setIsSticky] = useState(false)
   const [fadeOpacity, setFadeOpacity] = useState(0)
-  const [chipsH, setChipsH] = useState(52)
+  const [stickyH, setStickyH] = useState(140)
   const sentinelRef = useRef<HTMLDivElement>(null)
-  const chipsWrapRef = useRef<HTMLDivElement>(null)
+  const stickyWrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (chipsWrapRef.current) setChipsH(chipsWrapRef.current.offsetHeight)
+    if (stickyWrapRef.current) setStickyH(stickyWrapRef.current.offsetHeight)
   }, [])
 
   useEffect(() => {
@@ -50,10 +50,7 @@ export default function Home({ onProductClick }: HomeProps) {
     const update = () => {
       if (!sentinelRef.current) return
       const top = sentinelRef.current.getBoundingClientRect().top
-      // flip to fixed exactly when sentinel reaches the safe-top boundary,
-      // so fixed chips (top: var(--safe-top)) land at the same visual position
       setIsSticky(top <= safeTop)
-      // fade: 0 when sentinel is FADE_RANGE px above safeTop, 1 when at safeTop
       setFadeOpacity(Math.max(0, Math.min(1, (FADE_RANGE - (top - safeTop)) / FADE_RANGE)))
     }
 
@@ -116,9 +113,7 @@ export default function Home({ onProductClick }: HomeProps) {
       >
         <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Nullex Store</span>
 
-        {/* Right: balance pill only */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Balance pill */}
           <div
             style={{
               display: 'flex',
@@ -136,60 +131,121 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Search row */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 12,
-          marginTop: 16,
-          marginBottom: 16,
-          padding: '0 20px',
-        }}
-      >
-        {/* Search bar */}
+      {/* Sentinel — placed before search+chips, triggers sticky */}
+      <div ref={sentinelRef} style={{ height: 0 }} />
+
+      {/* Safe-area background fill — fixed, covers notch when stuck */}
+      {isSticky && (
         <div
           style={{
-            flex: 1,
-            height: 48,
-            backgroundColor: '#1A1A2E',
-            borderRadius: 24,
-            padding: '0 16px',
+            position: 'fixed',
+            top: 0,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'min(100vw, 480px)',
+            height: 'var(--safe-top, 0px)',
+            backgroundColor: '#0D0D14',
+            zIndex: 11,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
+      {/* Spacer — preserves layout height when search+chips are fixed */}
+      {isSticky && <div style={{ height: stickyH }} />}
+
+      {/* Sticky wrapper: search row + chips */}
+      <div
+        ref={stickyWrapRef}
+        style={isSticky ? {
+          position: 'fixed',
+          top: 'var(--safe-top, 0px)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 'min(100vw, 480px)',
+          zIndex: 10,
+          backgroundColor: '#0D0D14',
+          overflow: 'visible',
+        } : {
+          position: 'relative',
+        }}
+      >
+        {/* Search row */}
+        <div
+          style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            border: '1px solid rgba(255,255,255,0.118)',
+            flexDirection: 'row',
+            gap: 12,
+            padding: '16px 20px 8px',
           }}
         >
-          <Search size={18} color="#71717A" />
-          <span style={{ color: '#52525B', fontSize: 14 }}>
-            Поиск игр, ПО, подписок...
-          </span>
+          <div
+            style={{
+              flex: 1,
+              height: 48,
+              backgroundColor: '#1A1A2E',
+              borderRadius: 24,
+              padding: '0 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              border: '1px solid rgba(255,255,255,0.118)',
+            }}
+          >
+            <Search size={18} color="#71717A" />
+            <span style={{ color: '#52525B', fontSize: 14 }}>
+              Поиск игр, ПО, подписок...
+            </span>
+          </div>
+
+          <motion.div
+            whileTap={{ scale: 0.92 }}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            <SlidersHorizontal size={18} color="#FFFFFF" />
+          </motion.div>
         </div>
 
-        {/* Filter button */}
-        <motion.div
-          whileTap={{ scale: 0.92 }}
+        {/* Chips row */}
+        <div
           style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            flexShrink: 0,
+            gap: 10,
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            touchAction: 'pan-x',
+            padding: '4px 20px 12px',
           }}
         >
-          <SlidersHorizontal size={18} color="#FFFFFF" />
-        </motion.div>
+          {renderChips()}
+        </div>
+
+        {/* Bottom gradient — fades in as block approaches top */}
+        <div style={{
+          position: 'absolute',
+          bottom: -20, left: 0, right: 0, height: 20,
+          background: 'linear-gradient(to bottom, #0D0D14, transparent)',
+          opacity: fadeOpacity,
+          pointerEvents: 'none',
+        }} />
       </div>
 
       {/* Promo Banner */}
       <div
         style={{
-          margin: '0 20px 16px',
+          margin: '8px 20px 16px',
           background: 'linear-gradient(135deg, #3B1FA3 0%, #1B3FA8 50%, #0D0D4A 100%)',
           borderRadius: 28,
           height: 130,
@@ -229,7 +285,6 @@ export default function Home({ onProductClick }: HomeProps) {
 
         {/* Left column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
-          {/* LIMITED OFFER tag */}
           <div
             style={{
               display: 'inline-flex',
@@ -245,7 +300,6 @@ export default function Home({ onProductClick }: HomeProps) {
             <span style={{ color: '#A8FF3E', fontSize: 10, fontWeight: 700 }}>СПЕЦПРЕДЛОЖЕНИЕ</span>
           </div>
 
-          {/* Main headline */}
           <div
             style={{
               color: '#FFFFFF',
@@ -258,7 +312,6 @@ export default function Home({ onProductClick }: HomeProps) {
             {'−20% на\nпервый заказ'}
           </div>
 
-          {/* Sub text */}
           <span style={{ color: 'rgba(255,255,255,0.627)', fontSize: 12 }}>
             На всё цифровое ПО сегодня
           </span>
@@ -275,7 +328,6 @@ export default function Home({ onProductClick }: HomeProps) {
             zIndex: 1,
           }}
         >
-          {/* Glyph box */}
           <div
             style={{
               width: 70,
@@ -290,7 +342,6 @@ export default function Home({ onProductClick }: HomeProps) {
             <Sparkles size={32} color="#A8FF3E" />
           </div>
 
-          {/* Shop Now button */}
           <motion.div
             whileTap={{ scale: 0.94 }}
             style={{
@@ -305,65 +356,9 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Categories label — scrolls away normally */}
+      {/* Categories label */}
       <div style={{ padding: '0 20px 10px' }}>
         <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Категории</span>
-      </div>
-
-      {/* Sentinel — position in document where chips sit */}
-      <div ref={sentinelRef} style={{ height: 0 }} />
-
-      {/* Safe-area background fill — fixed, covers notch when chips are stuck */}
-      {isSticky && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 'min(100vw, 480px)',
-            height: 'var(--safe-top, 0px)',
-            backgroundColor: '#0D0D14',
-            zIndex: 11,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
-
-      {/* Spacer — keeps layout height while chips are fixed */}
-      {isSticky && <div style={{ height: chipsH }} />}
-
-      {/* Chips container — switches to fixed when stuck */}
-      <div
-        ref={chipsWrapRef}
-        style={isSticky ? {
-          position: 'fixed',
-          top: 'var(--safe-top, 0px)',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'min(100vw, 480px)',
-          zIndex: 10,
-          backgroundColor: '#0D0D14',
-          paddingBottom: 12,
-          overflow: 'visible',
-        } : {
-          position: 'relative',
-          paddingBottom: 12,
-        }}
-      >
-        {/* Chips row */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', padding: '10px 20px 0' }}>
-          {renderChips()}
-        </div>
-
-        {/* Bottom gradient — fades in as chips approach top */}
-        <div style={{
-          position: 'absolute',
-          bottom: -20, left: 0, right: 0, height: 20,
-          background: 'linear-gradient(to bottom, #0D0D14, transparent)',
-          opacity: fadeOpacity,
-          pointerEvents: 'none',
-        }} />
       </div>
 
       {/* Product grid */}
@@ -399,7 +394,6 @@ export default function Home({ onProductClick }: HomeProps) {
                 position: 'relative',
               }}
             >
-              {/* Glow ellipse */}
               <div
                 style={{
                   position: 'absolute',
