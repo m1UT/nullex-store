@@ -6,10 +6,9 @@ import {
   SlidersHorizontal,
   Zap,
   Gamepad2,
-  Code2,
-  Crown,
-  Coins,
-  GraduationCap,
+  Type,
+  Box,
+  Music2,
   LayoutGrid,
   Sparkles,
 } from 'lucide-react'
@@ -17,12 +16,11 @@ import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
 const CATEGORIES = [
-  { label: 'Все',       Icon: LayoutGrid },
-  { label: 'Игры',      Icon: Gamepad2 },
-  { label: 'ПО',        Icon: Code2 },
-  { label: 'Подписки',  Icon: Crown },
-  { label: 'Валюты',    Icon: Coins },
-  { label: 'Курсы',     Icon: GraduationCap },
+  { label: 'All',       Icon: LayoutGrid },
+  { label: 'Games',     Icon: Gamepad2 },
+  { label: 'Fonts',     Icon: Type },
+  { label: '3D Assets', Icon: Box },
+  { label: 'Music',     Icon: Music2 },
 ]
 
 interface HomeProps {
@@ -79,10 +77,8 @@ export default function Home({ onProductClick }: HomeProps) {
           borderRadius: 999,
           padding: '8px 14px',
           cursor: 'pointer',
-          background: isActive ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)' : 'rgba(255,255,255,0.06)',
-          backdropFilter: isActive ? undefined : 'blur(12px)',
-          WebkitBackdropFilter: isActive ? undefined : 'blur(12px)',
-          border: isActive ? 'none' : '1px solid rgba(255,255,255,0.09)',
+          background: isActive ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)' : '#1A1A2E',
+          border: isActive ? 'none' : '1px solid rgba(255,255,255,0.125)',
         }}
       >
         <cat.Icon size={14} color={isActive ? '#FFFFFF' : '#A1A1AA'} />
