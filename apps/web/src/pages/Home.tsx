@@ -30,7 +30,6 @@ interface HomeProps {
 export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(1)
   const [isSticky, setIsSticky] = useState(false)
-  const [glassOpacity, setGlassOpacity] = useState(0)
   const [stickyH, setStickyH] = useState(140)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const stickyWrapRef = useRef<HTMLDivElement>(null)
@@ -44,12 +43,10 @@ export default function Home({ onProductClick }: HomeProps) {
       getComputedStyle(document.documentElement).getPropertyValue('--safe-top') || '0'
     ) || 0
 
-    const FADE_RANGE = 60
     const update = () => {
       if (!sentinelRef.current) return
       const top = sentinelRef.current.getBoundingClientRect().top
       setIsSticky(top <= safeTop)
-      setGlassOpacity(Math.max(0, Math.min(1, (FADE_RANGE - (top - safeTop)) / FADE_RANGE)))
     }
 
     window.addEventListener('scroll',    update, { passive: true })
@@ -277,7 +274,8 @@ export default function Home({ onProductClick }: HomeProps) {
             WebkitBackdropFilter: 'blur(24px)',
             maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
-            opacity: glassOpacity,
+            opacity: isSticky ? 1 : 0,
+            transition: 'opacity 0.3s ease',
             pointerEvents: 'none',
             zIndex: 0,
           }}
