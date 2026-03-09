@@ -79,9 +79,10 @@ export default function Home({ onProductClick }: HomeProps) {
           borderRadius: 999,
           padding: '8px 14px',
           cursor: 'pointer',
-          background: isActive ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)' : 'transparent',
-          backgroundColor: isActive ? undefined : '#1A1A2E',
-          border: isActive ? 'none' : '1px solid rgba(255,255,255,0.125)',
+          background: isActive ? 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)' : 'rgba(255,255,255,0.06)',
+          backdropFilter: isActive ? undefined : 'blur(12px)',
+          WebkitBackdropFilter: isActive ? undefined : 'blur(12px)',
+          border: isActive ? 'none' : '1px solid rgba(255,255,255,0.09)',
         }}
       >
         <cat.Icon size={14} color={isActive ? '#FFFFFF' : '#A1A1AA'} />
@@ -185,13 +186,15 @@ export default function Home({ onProductClick }: HomeProps) {
             style={{
               flex: 1,
               height: 48,
-              backgroundColor: '#1A1A2E',
+              backgroundColor: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
               borderRadius: 24,
               padding: '0 16px',
               display: 'flex',
               alignItems: 'center',
               gap: 10,
-              border: '1px solid rgba(255,255,255,0.118)',
+              border: '1px solid rgba(255,255,255,0.09)',
             }}
           >
             <Search size={18} color="#71717A" />
