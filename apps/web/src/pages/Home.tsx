@@ -134,36 +134,19 @@ export default function Home({ onProductClick }: HomeProps) {
       {/* Sentinel — placed before search+chips, triggers sticky */}
       <div ref={sentinelRef} style={{ height: 0 }} />
 
-      {/* Safe-area background fill — always fixed, fades in with fadeOpacity */}
+      {/* Spacer — preserves layout height when search+chips are fixed */}
+      {isSticky && <div style={{ height: stickyH }} />}
+
+      {/* Sticky wrapper: search row + chips; extends to top:0 to cover safe-area seamlessly */}
       <div
-        style={{
+        ref={stickyWrapRef}
+        style={isSticky ? {
           position: 'fixed',
           top: 0,
           left: '50%',
           transform: 'translateX(-50%)',
           width: 'min(100vw, 480px)',
-          height: 'var(--safe-top, 0px)',
-          backgroundColor: 'rgba(13,13,20,0.72)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          zIndex: 11,
-          pointerEvents: 'none',
-          opacity: fadeOpacity,
-        }}
-      />
-
-      {/* Spacer — preserves layout height when search+chips are fixed */}
-      {isSticky && <div style={{ height: stickyH }} />}
-
-      {/* Sticky wrapper: search row + chips */}
-      <div
-        ref={stickyWrapRef}
-        style={isSticky ? {
-          position: 'fixed',
-          top: 'var(--safe-top, 0px)',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'min(100vw, 480px)',
+          paddingTop: 'var(--safe-top, 0px)',
           zIndex: 10,
           overflow: 'visible',
         } : {
@@ -178,7 +161,7 @@ export default function Home({ onProductClick }: HomeProps) {
             backgroundColor: 'rgba(13,13,20,0.72)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+
             opacity: fadeOpacity,
             pointerEvents: 'none',
             zIndex: 0,
