@@ -38,12 +38,17 @@ export default function Profile() {
 
   useEffect(() => {
     if (!activationItem) return
-    const prevent = (e: Event) => e.preventDefault()
-    document.addEventListener('wheel',     prevent, { passive: false })
-    document.addEventListener('touchmove', prevent, { passive: false })
+    const scrollY = window.scrollY
+    document.body.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
     return () => {
-      document.removeEventListener('wheel',     prevent)
-      document.removeEventListener('touchmove', prevent)
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, scrollY)
     }
   }, [activationItem])
 
@@ -432,9 +437,7 @@ export default function Profile() {
                 position: 'fixed',
                 inset: 0,
                 zIndex: 110,
-                backgroundColor: 'rgba(13,13,20,0.67)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
+                backgroundColor: 'rgba(13,13,20,0.82)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
