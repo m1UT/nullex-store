@@ -30,7 +30,7 @@ export default function App() {
     <div
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflowX: 'clip' }}
     >
-      <PullToRefresh />
+      {/* <PullToRefresh /> */}
 
       {/* Only this div is transformed on pull — NavPill stays outside */}
       <div id="pull-content">
@@ -40,10 +40,13 @@ export default function App() {
           {selectedProduct && (
             <motion.div
               key="product-detail"
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 320, damping: 36, mass: 0.9 }}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={{
+                hidden:  { y: '100%', transition: { duration: 0.28, ease: [0.4, 0, 1, 1] } },
+                visible: { y: 0,      transition: { duration: 0.42, ease: [0.32, 0.72, 0, 1] } },
+              }}
               style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#0D0D14', willChange: 'transform' }}
             >
               <ProductDetail
