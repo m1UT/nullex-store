@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
@@ -407,7 +408,7 @@ export default function Profile() {
     </main>
 
       {/* ── Code Activation Bottom Sheet ── */}
-      <AnimatePresence>
+      {createPortal(<AnimatePresence>
         {activationItem && (
           <>
             {/* Backdrop */}
@@ -520,7 +521,7 @@ export default function Profile() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
     </>
   )
 }
