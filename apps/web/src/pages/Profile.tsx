@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
@@ -36,19 +36,17 @@ export default function Profile() {
   const [activationItem, setActivationItem] = useState<InventoryItem | null>(null)
   const [copied, setCopied] = useState(false)
 
+  const overlayRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!activationItem) return
-    const scrollY = window.scrollY
     document.body.style.overflow = 'hidden'
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = '100%'
+    const el = overlayRef.current
+    const prevent = (e: TouchEvent) => e.preventDefault()
+    el?.addEventListener('touchmove', prevent, { passive: false })
     return () => {
       document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.width = ''
-      window.scrollTo(0, scrollY)
+      el?.removeEventListener('touchmove', prevent)
     }
   }, [activationItem])
 
@@ -427,6 +425,7 @@ export default function Profile() {
           <>
             {/* Overlay — flex container that centers the modal */}
             <motion.div
+              ref={overlayRef}
               key="overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
