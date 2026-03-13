@@ -410,65 +410,68 @@ export default function Profile() {
       </div>
     </main>
 
-      {/* ── Code Activation Modal ── */}
+      {/* ── Code Activation Bottom Sheet ── */}
       <AnimatePresence>
         {activationItem && (
           <>
-            {/* Overlay — flex container that centers the modal */}
+            {/* Backdrop */}
             <motion.div
-              key="overlay"
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.22 }}
               onClick={() => setActivationItem(null)}
               style={{
                 position: 'fixed',
                 inset: 0,
                 zIndex: 110,
-                backgroundColor: 'rgba(13,13,20,0.82)',
-                touchAction: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 24px',
+                backgroundColor: 'rgba(13,13,20,0.7)',
               }}
-            >
-            {/* Modal card */}
+            />
+
+            {/* Sheet */}
             <motion.div
-              key="modal"
-              initial={{ scale: 0.88, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.88, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-              onClick={e => e.stopPropagation()}
+              key="sheet"
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 380, damping: 36, mass: 0.8 }}
               style={{
-                width: '100%',
-                maxWidth: 360,
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 111,
                 backgroundColor: '#12121F',
-                borderRadius: 24,
-                border: '1px solid rgba(255,255,255,0.085)',
-                boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
-                padding: 20,
+                borderRadius: '24px 24px 0 0',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderBottom: 'none',
+                padding: '12px 20px 32px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 16,
+                touchAction: 'none',
               }}
             >
+              {/* Drag handle */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 4 }}>
+                <div style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.15)' }} />
+              </div>
+
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Код активации</span>
+                <div>
+                  <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Код активации</span>
+                  <div style={{ color: '#52525B', fontSize: 12, marginTop: 2 }}>{activationItem.name}</div>
+                </div>
                 <motion.div
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setActivationItem(null)}
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
+                    width: 32, height: 32, borderRadius: 16,
                     backgroundColor: 'rgba(255,255,255,0.059)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',
                   }}
                 >
@@ -479,7 +482,7 @@ export default function Profile() {
               {/* Code row */}
               <div
                 style={{
-                  height: 52,
+                  height: 56,
                   borderRadius: 14,
                   backgroundColor: '#1A1A2E',
                   border: '1px solid rgba(255,255,255,0.071)',
@@ -489,29 +492,22 @@ export default function Profile() {
                   padding: '0 16px',
                 }}
               >
-                <span style={{ color: '#A1A1AA', fontSize: 13, fontWeight: 600, letterSpacing: 1 }}>
+                <span style={{ color: '#E4E4E7', fontSize: 13, fontWeight: 600, letterSpacing: 1.5, fontFamily: 'monospace' }}>
                   {activationItem.code}
                 </span>
                 <motion.div
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleCopy(activationItem.code)}
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    backgroundColor: 'rgba(168,255,62,0.102)',
+                    width: 36, height: 36, borderRadius: 10,
+                    backgroundColor: copied ? 'rgba(168,255,62,0.18)' : 'rgba(168,255,62,0.102)',
                     border: '1px solid rgba(168,255,62,0.251)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', flexShrink: 0,
+                    transition: 'background-color 0.2s',
                   }}
                 >
-                  {copied
-                    ? <Check size={16} color="#A8FF3E" />
-                    : <Copy size={16} color="#A8FF3E" />
-                  }
+                  {copied ? <Check size={16} color="#A8FF3E" /> : <Copy size={16} color="#A8FF3E" />}
                 </motion.div>
               </div>
 
@@ -519,7 +515,6 @@ export default function Profile() {
               <span style={{ color: '#52525B', fontSize: 12 }}>
                 Скопируйте код и введите его при активации продукта
               </span>
-            </motion.div>
             </motion.div>
           </>
         )}
