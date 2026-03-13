@@ -30,7 +30,7 @@ export default function App() {
     <div
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflowX: 'clip' }}
     >
-      {/* <PullToRefresh /> */}
+      <PullToRefresh />
 
       {/* Only this div is transformed on pull — NavPill stays outside */}
       <div id="pull-content">
