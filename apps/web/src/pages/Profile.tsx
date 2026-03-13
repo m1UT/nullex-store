@@ -37,8 +37,20 @@ export default function Profile() {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    document.body.style.overflow = activationItem ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
+    if (!activationItem) return
+    const scrollY = window.scrollY
+    const body = document.body
+    body.style.overflow = 'hidden'
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.width = '100%'
+    return () => {
+      body.style.overflow = ''
+      body.style.position = ''
+      body.style.top = ''
+      body.style.width = ''
+      window.scrollTo(0, scrollY)
+    }
   }, [activationItem])
 
   const handleCopy = (code: string) => {
@@ -433,10 +445,13 @@ export default function Profile() {
             {/* Sheet */}
             <motion.div
               key="sheet"
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 1 }}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={{
+                hidden:  { y: '100%', transition: { duration: 0.26, ease: [0.4, 0, 1, 1] } },
+                visible: { y: 0,      transition: { duration: 0.38, ease: [0.32, 0.72, 0, 1] } },
+              }}
               style={{
                 position: 'fixed',
                 bottom: 0,
