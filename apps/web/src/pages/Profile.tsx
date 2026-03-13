@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
@@ -36,22 +36,6 @@ export default function Profile() {
   const [activationItem, setActivationItem] = useState<InventoryItem | null>(null)
   const [copied, setCopied] = useState(false)
 
-  useEffect(() => {
-    if (!activationItem) return
-    const scrollY = window.scrollY
-    const body = document.body
-    body.style.overflow = 'hidden'
-    body.style.position = 'fixed'
-    body.style.top = `-${scrollY}px`
-    body.style.width = '100%'
-    return () => {
-      body.style.overflow = ''
-      body.style.position = ''
-      body.style.top = ''
-      body.style.width = ''
-      window.scrollTo(0, scrollY)
-    }
-  }, [activationItem])
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -439,6 +423,7 @@ export default function Profile() {
                 inset: 0,
                 zIndex: 110,
                 backgroundColor: 'rgba(13,13,20,0.7)',
+                touchAction: 'none',
               }}
             />
 
