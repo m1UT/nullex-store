@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import {
   Wallet,
@@ -247,22 +248,24 @@ export default function Home({ onProductClick }: HomeProps) {
       {/* Spacer — preserves layout height when search+chips are fixed */}
       {isSticky && <div style={{ height: stickyH }} />}
 
-      {/* Sticky wrapper: search row + chips; extends to top:0 to cover safe-area seamlessly */}
-      <div
-        ref={stickyWrapRef}
-        style={isSticky ? {
-          position: 'fixed',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'min(100vw, 480px)',
-          paddingTop: 'var(--safe-top, 0px)',
-          zIndex: 10,
-          overflow: 'visible',
-        } : {
-          position: 'relative',
-        }}
-      >
+      {/* Sticky wrapper: portal when sticky to escape #pull-content transform context */}
+      {(() => {
+        const wrap = (
+          <div
+            ref={stickyWrapRef}
+            style={isSticky ? {
+              position: 'fixed',
+              top: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 'min(100vw, 480px)',
+              paddingTop: 'var(--safe-top, 0px)',
+              zIndex: 10,
+              overflow: 'visible',
+            } : {
+              position: 'relative',
+            }}
+          >
         {/* Glass background — extends below wrapper and fades via mask so blur itself dissolves */}
         <div
           style={{
@@ -349,7 +352,10 @@ export default function Home({ onProductClick }: HomeProps) {
           {renderChips()}
         </div>
 
-      </div>
+          </div>
+        )
+        return isSticky ? createPortal(wrap, document.body) : wrap
+      })()}
 
       {/* Product grid */}
       <div
