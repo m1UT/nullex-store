@@ -51,6 +51,7 @@ export default function PullToRefresh() {
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
       if (isAnyParentScrolled(e)) return
+      if ((e.target as HTMLElement).closest('[data-overlay]')) return
       startY.current = e.touches[0].clientY
       startX.current = e.touches[0].clientX
       dirLocked.current = 'none'

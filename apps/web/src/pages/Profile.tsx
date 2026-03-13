@@ -417,6 +417,7 @@ export default function Profile() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.22 }}
+              data-overlay=""
               onClick={() => setActivationItem(null)}
               style={{
                 position: 'fixed',
