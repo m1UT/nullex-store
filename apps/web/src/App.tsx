@@ -43,8 +43,8 @@ export default function App() {
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#0D0D14' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 36, mass: 0.9 }}
+              style={{ position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#0D0D14', willChange: 'transform' }}
             >
               <ProductDetail
                 product={selectedProduct}

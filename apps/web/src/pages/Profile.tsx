@@ -436,7 +436,7 @@ export default function Profile() {
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 380, damping: 36, mass: 0.8 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 1 }}
               style={{
                 position: 'fixed',
                 bottom: 0,
@@ -451,6 +451,7 @@ export default function Profile() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 16,
+                willChange: 'transform',
                 touchAction: 'none',
               }}
             >

@@ -71,12 +71,13 @@ export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
               {isActive && (
                 <motion.div
                   layoutId="navIndicator"
-                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  transition={{ type: 'spring', stiffness: 360, damping: 34, mass: 0.8 }}
                   style={{
                     position: 'absolute',
                     inset: 0,
                     borderRadius: '26px',
                     background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
+                    willChange: 'transform',
                   }}
                 />
               )}
