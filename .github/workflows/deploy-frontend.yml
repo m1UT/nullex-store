@@ -1,0 +1,13 @@
+name: Deploy Frontend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/id_ed25519_runner root@192.168.88.104 "bash /opt/deploy.sh"
