@@ -7,6 +7,7 @@ export interface Product {
   meta: string
   cardMeta: string
   price: string
+  category: string
   Icon: LucideIcon
   iconColor: string
   bg: string
@@ -21,6 +22,7 @@ export const PRODUCTS: Product[] = [
     name: 'Neon Arena',
     meta: 'Игры · Шутер · Инди',
     cardMeta: 'Игры · Шутер',
+    category: 'Games',
     price: '$24.99',
     Icon: Gamepad2,
     iconColor: '#9B5CF6',
@@ -35,6 +37,7 @@ export const PRODUCTS: Product[] = [
     name: 'Shadow Tactics',
     meta: 'Игры · Стратегия · РПГ',
     cardMeta: 'Игры · Стратегия',
+    category: 'Games',
     price: '$19.99',
     Icon: Sword,
     iconColor: '#A8FF3E',
@@ -49,6 +52,7 @@ export const PRODUCTS: Product[] = [
     name: 'DevKit Pro',
     meta: 'ПО · Разработка · Лицензия',
     cardMeta: 'ПО · Разработка',
+    category: 'Software',
     price: '$49.99',
     Icon: Code2,
     iconColor: '#4F6EF7',
@@ -63,6 +67,7 @@ export const PRODUCTS: Product[] = [
     name: 'VaultGuard',
     meta: 'ПО · Безопасность',
     cardMeta: 'ПО · Безопасность',
+    category: 'Software',
     price: '$14.99',
     Icon: Shield,
     iconColor: '#A8FF3E',
@@ -77,6 +82,7 @@ export const PRODUCTS: Product[] = [
     name: 'StreamPass',
     meta: 'Подписка · Стриминг · 1 месяц',
     cardMeta: 'Подписка · Стриминг',
+    category: 'Subscriptions',
     price: '$9.99',
     Icon: PlayCircle,
     iconColor: '#FF6BF8',
@@ -91,6 +97,7 @@ export const PRODUCTS: Product[] = [
     name: 'CloudMax',
     meta: 'Подписка · Хранилище · 1 месяц',
     cardMeta: 'Подписка · Хранилище',
+    category: 'Subscriptions',
     price: '$4.99',
     Icon: Cloud,
     iconColor: '#4F6EF7',

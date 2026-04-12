@@ -7,21 +7,20 @@ import {
   SlidersHorizontal,
   Zap,
   Gamepad2,
-  Type,
-  Box,
-  Music2,
+  Code2,
+  PlayCircle,
   LayoutGrid,
   Sparkles,
+  X,
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
 const CATEGORIES = [
-  { label: 'All',       Icon: LayoutGrid },
-  { label: 'Games',     Icon: Gamepad2 },
-  { label: 'Fonts',     Icon: Type },
-  { label: '3D Assets', Icon: Box },
-  { label: 'Music',     Icon: Music2 },
+  { label: 'All',           Icon: LayoutGrid },
+  { label: 'Games',         Icon: Gamepad2 },
+  { label: 'Software',      Icon: Code2 },
+  { label: 'Subscriptions', Icon: PlayCircle },
 ]
 
 interface HomeProps {
@@ -29,7 +28,8 @@ interface HomeProps {
 }
 
 export default function Home({ onProductClick }: HomeProps) {
-  const [activeCategory, setActiveCategory] = useState(1)
+  const [activeCategory, setActiveCategory] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
   const [isSticky, setIsSticky] = useState(false)
   const [stickyH, setStickyH] = useState(140)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -310,10 +310,30 @@ export default function Home({ onProductClick }: HomeProps) {
               border: '1px solid rgba(255,255,255,0.09)',
             }}
           >
-            <Search size={18} color="#71717A" />
-            <span style={{ color: '#52525B', fontSize: 14 }}>
-              Поиск игр, ПО, подписок...
-            </span>
+            <Search size={18} color="#71717A" style={{ flexShrink: 0 }} />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Поиск игр, ПО, подписок..."
+              style={{
+                flex: 1,
+                background: 'none',
+                border: 'none',
+                outline: 'none',
+                color: '#FFFFFF',
+                fontSize: 14,
+                fontFamily: 'inherit',
+              }}
+            />
+            {searchQuery && (
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setSearchQuery('')}
+                style={{ cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center' }}
+              >
+                <X size={16} color="#71717A" />
+              </motion.div>
+            )}
           </div>
 
           <motion.div
@@ -366,7 +386,12 @@ export default function Home({ onProductClick }: HomeProps) {
           padding: '0 20px',
         }}
       >
-        {PRODUCTS.map((product) => (
+        {PRODUCTS.filter((p) => {
+          const q = searchQuery.trim().toLowerCase()
+          const matchSearch = !q || p.name.toLowerCase().includes(q) || p.meta.toLowerCase().includes(q)
+          const matchCategory = activeCategory === 0 || p.category === CATEGORIES[activeCategory].label
+          return matchSearch && matchCategory
+        }).map((product) => (
           <motion.div
             key={product.name}
             whileTap={{ scale: 0.97 }}
