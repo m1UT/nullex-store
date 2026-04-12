@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowLeft, Share2, Heart, Star, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, Share2, Heart, ShoppingCart } from 'lucide-react'
 import type { Product } from '../data/products'
 
 interface ProductDetailProps {
@@ -145,15 +145,6 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
           >
             <Heart size={20} color="#9B5CF6" />
           </motion.div>
-        </div>
-
-        {/* Rating */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            {[1, 2, 3, 4].map((i) => <Star key={i} size={14} color="#A8FF3E" fill="#A8FF3E" />)}
-            <Star size={14} color="#71717A" fill="#71717A" />
-          </div>
-          <span style={{ color: '#A1A1AA', fontSize: 13 }}>4.8&nbsp;&nbsp;(2 341 отзыв)</span>
         </div>
 
         {/* Description */}
