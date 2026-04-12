@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wallet, Heart, LayoutGrid, Gamepad2, Type, Box, Music2 } from 'lucide-react'
+import { Wallet, Heart, LayoutGrid, Gamepad2, Code2, PlayCircle } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 
 const FILTER_CHIPS = [
-  { label: 'All',       Icon: LayoutGrid },
-  { label: 'Games',     Icon: Gamepad2 },
-  { label: 'Fonts',     Icon: Type },
-  { label: '3D Assets', Icon: Box },
-  { label: 'Music',     Icon: Music2 },
+  { label: 'All',           Icon: LayoutGrid },
+  { label: 'Games',         Icon: Gamepad2 },
+  { label: 'Software',      Icon: Code2 },
+  { label: 'Subscriptions', Icon: PlayCircle },
 ]
 
 const LIKED_PRODUCTS = PRODUCTS.slice(0, 4)
