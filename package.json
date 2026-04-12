@@ -5,8 +5,10 @@
   "scripts": {
     "dev:web": "pnpm --filter web dev",
     "dev:bot": "pnpm --filter bot start:dev",
+    "dev:admin": "pnpm --filter admin dev",
     "build:web": "pnpm --filter web build",
-    "build:bot": "pnpm --filter bot build"
+    "build:bot": "pnpm --filter bot build",
+    "build:admin": "pnpm --filter admin build"
   },
   "engines": {
     "node": ">=20",

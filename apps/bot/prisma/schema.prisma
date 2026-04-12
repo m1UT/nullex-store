@@ -24,6 +24,7 @@ model Product {
   description  String?
   category     Category
   price        Decimal
+  stock        Int         @default(0)
   fileUrl      String?
   thumbnailUrl String?
   createdAt    DateTime    @default(now())
@@ -34,9 +35,8 @@ model Product {
 
 enum Category {
   GAMES
-  FONTS
-  ASSETS_3D
-  MUSIC
+  SOFTWARE
+  SUBSCRIPTIONS
 }
 
 model Order {
