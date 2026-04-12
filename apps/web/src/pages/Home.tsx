@@ -352,30 +352,47 @@ export default function Home({ onProductClick }: HomeProps) {
             )}
           </div>
 
-          <motion.div
-            ref={sortBtnRef}
-            whileTap={{ scale: 0.92 }}
-            onClick={() => {
-              const rect = sortBtnRef.current?.getBoundingClientRect() ?? null
-              setSortBtnRect(rect)
-              setShowSort((v) => !v)
-            }}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              background: (sortBy !== 'default' || inStockOnly)
-                ? 'linear-gradient(135deg, #A8FF3E 0%, #4F6EF7 100%)'
-                : 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
-          >
-            <SlidersHorizontal size={18} color="#FFFFFF" />
-          </motion.div>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <motion.div
+              ref={sortBtnRef}
+              whileTap={{ scale: 0.92 }}
+              onClick={() => {
+                const rect = sortBtnRef.current?.getBoundingClientRect() ?? null
+                setSortBtnRect(rect)
+                setShowSort((v) => !v)
+              }}
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <SlidersHorizontal size={18} color="#FFFFFF" />
+            </motion.div>
+            {(sortBy !== 'default' || inStockOnly) && (
+              <div style={{
+                position: 'absolute',
+                top: -2, right: -2,
+                width: 18, height: 18,
+                borderRadius: '50%',
+                backgroundColor: '#A8FF3E',
+                border: '2px solid #0D0D14',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none',
+              }}>
+                <span style={{ color: '#0D0D14', fontSize: 10, fontWeight: 700, lineHeight: 1 }}>
+                  {(sortBy !== 'default' ? 1 : 0) + (inStockOnly ? 1 : 0)}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Chips row */}
