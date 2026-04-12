@@ -147,6 +147,19 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
           </motion.div>
         </div>
 
+        {/* Stock */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 8, height: 8, borderRadius: '50%',
+            backgroundColor: product.stock > 0 ? '#A8FF3E' : '#FF3B30',
+            flexShrink: 0,
+          }} />
+          {product.stock > 0
+            ? <span style={{ color: '#A8FF3E', fontSize: 13, fontWeight: 600 }}>В наличии · {product.stock} шт.</span>
+            : <span style={{ color: '#FF3B30', fontSize: 13, fontWeight: 600 }}>Нет в наличии</span>
+          }
+        </div>
+
         {/* Description */}
         <p style={{ color: '#A1A1AA', fontSize: 13, lineHeight: 1.5 }}>
           {product.description}

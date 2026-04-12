@@ -8,6 +8,7 @@ export interface Product {
   cardMeta: string
   price: string
   category: string
+  stock: number
   Icon: LucideIcon
   iconColor: string
   bg: string
@@ -23,6 +24,7 @@ export const PRODUCTS: Product[] = [
     meta: 'Игры · Шутер · Инди',
     cardMeta: 'Игры · Шутер',
     category: 'Games',
+    stock: 12,
     price: '$24.99',
     Icon: Gamepad2,
     iconColor: '#9B5CF6',
@@ -38,6 +40,7 @@ export const PRODUCTS: Product[] = [
     meta: 'Игры · Стратегия · РПГ',
     cardMeta: 'Игры · Стратегия',
     category: 'Games',
+    stock: 0,
     price: '$19.99',
     Icon: Sword,
     iconColor: '#A8FF3E',
@@ -53,6 +56,7 @@ export const PRODUCTS: Product[] = [
     meta: 'ПО · Разработка · Лицензия',
     cardMeta: 'ПО · Разработка',
     category: 'Software',
+    stock: 5,
     price: '$49.99',
     Icon: Code2,
     iconColor: '#4F6EF7',
@@ -68,6 +72,7 @@ export const PRODUCTS: Product[] = [
     meta: 'ПО · Безопасность',
     cardMeta: 'ПО · Безопасность',
     category: 'Software',
+    stock: 99,
     price: '$14.99',
     Icon: Shield,
     iconColor: '#A8FF3E',
@@ -83,6 +88,7 @@ export const PRODUCTS: Product[] = [
     meta: 'Подписка · Стриминг · 1 месяц',
     cardMeta: 'Подписка · Стриминг',
     category: 'Subscriptions',
+    stock: 0,
     price: '$9.99',
     Icon: PlayCircle,
     iconColor: '#FF6BF8',
@@ -98,6 +104,7 @@ export const PRODUCTS: Product[] = [
     meta: 'Подписка · Хранилище · 1 месяц',
     cardMeta: 'Подписка · Хранилище',
     category: 'Subscriptions',
+    stock: 34,
     price: '$4.99',
     Icon: Cloud,
     iconColor: '#4F6EF7',

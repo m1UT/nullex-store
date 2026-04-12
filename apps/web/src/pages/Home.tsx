@@ -15,6 +15,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  PackageCheck,
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
@@ -40,6 +41,7 @@ export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('default')
+  const [inStockOnly, setInStockOnly] = useState(false)
   const [showSort, setShowSort] = useState(false)
   const [sortBtnRect, setSortBtnRect] = useState<DOMRect | null>(null)
   const [isSticky, setIsSticky] = useState(false)
@@ -362,7 +364,7 @@ export default function Home({ onProductClick }: HomeProps) {
               width: 48,
               height: 48,
               borderRadius: 24,
-              background: sortBy !== 'default'
+              background: (sortBy !== 'default' || inStockOnly)
                 ? 'linear-gradient(135deg, #A8FF3E 0%, #4F6EF7 100%)'
                 : 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
               display: 'flex',
@@ -412,7 +414,8 @@ export default function Home({ onProductClick }: HomeProps) {
           const q = searchQuery.trim().toLowerCase()
           const matchSearch = !q || p.name.toLowerCase().includes(q) || p.meta.toLowerCase().includes(q)
           const matchCategory = activeCategory === 0 || p.category === CATEGORIES[activeCategory].label
-          return matchSearch && matchCategory
+          const matchStock = !inStockOnly || p.stock > 0
+          return matchSearch && matchCategory && matchStock
         }).sort((a, b) => {
           if (sortBy === 'price-asc')  return parseFloat(a.price.slice(1)) - parseFloat(b.price.slice(1))
           if (sortBy === 'price-desc') return parseFloat(b.price.slice(1)) - parseFloat(a.price.slice(1))
@@ -457,7 +460,13 @@ export default function Home({ onProductClick }: HomeProps) {
             <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
               <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{product.name}</span>
               <span style={{ color: '#71717A', fontSize: 11 }}>{product.cardMeta}</span>
-              <span style={{ color: '#A8FF3E', fontSize: 14, fontWeight: 700 }}>{product.price}</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 }}>
+                <span style={{ color: '#A8FF3E', fontSize: 14, fontWeight: 700 }}>{product.price}</span>
+                {product.stock > 0
+                  ? <span style={{ color: '#A8FF3E', fontSize: 10, fontWeight: 600 }}>{product.stock} шт.</span>
+                  : <span style={{ color: '#FF3B30', fontSize: 10, fontWeight: 600 }}>Нет в наличии</span>
+                }
+              </div>
             </div>
           </motion.div>
         ))}
@@ -516,6 +525,42 @@ export default function Home({ onProductClick }: HomeProps) {
                   </motion.div>
                 )
               })}
+              <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.071)', margin: '0 12px' }} />
+              <motion.div
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { setInStockOnly((v) => !v); setShowSort(false) }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 10,
+                  padding: '12px 16px',
+                  cursor: 'pointer',
+                  backgroundColor: inStockOnly ? 'rgba(168,255,62,0.10)' : 'transparent',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <PackageCheck size={15} color={inStockOnly ? '#A8FF3E' : '#A1A1AA'} />
+                  <span style={{ color: inStockOnly ? '#A8FF3E' : '#A1A1AA', fontSize: 13, fontWeight: inStockOnly ? 700 : 400 }}>
+                    Только в наличии
+                  </span>
+                </div>
+                <div style={{
+                  width: 36, height: 20, borderRadius: 10,
+                  backgroundColor: inStockOnly ? '#A8FF3E' : 'rgba(255,255,255,0.12)',
+                  position: 'relative',
+                  transition: 'background-color 0.2s',
+                  flexShrink: 0,
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: 2, left: inStockOnly ? 18 : 2,
+                    width: 16, height: 16, borderRadius: '50%',
+                    backgroundColor: inStockOnly ? '#0D0D14' : '#71717A',
+                    transition: 'left 0.2s',
+                  }} />
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
