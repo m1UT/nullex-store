@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Wallet,
   Search,
@@ -12,6 +12,9 @@ import {
   LayoutGrid,
   Sparkles,
   X,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
@@ -27,9 +30,17 @@ interface HomeProps {
   onProductClick: (product: Product) => void
 }
 
+const SORT_OPTIONS = [
+  { label: 'По умолчанию', value: 'default',    Icon: ArrowUpDown },
+  { label: 'Дешевле',      value: 'price-asc',   Icon: ArrowUp },
+  { label: 'Дороже',       value: 'price-desc',  Icon: ArrowDown },
+]
+
 export default function Home({ onProductClick }: HomeProps) {
   const [activeCategory, setActiveCategory] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState('default')
+  const [showSort, setShowSort] = useState(false)
   const [isSticky, setIsSticky] = useState(false)
   const [stickyH, setStickyH] = useState(140)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -336,22 +347,80 @@ export default function Home({ onProductClick }: HomeProps) {
             )}
           </div>
 
-          <motion.div
-            whileTap={{ scale: 0.92 }}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
-          >
-            <SlidersHorizontal size={18} color="#FFFFFF" />
-          </motion.div>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <motion.div
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setShowSort((v) => !v)}
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                background: sortBy !== 'default'
+                  ? 'linear-gradient(135deg, #A8FF3E 0%, #4F6EF7 100%)'
+                  : 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <SlidersHorizontal size={18} color="#FFFFFF" />
+            </motion.div>
+
+            <AnimatePresence>
+              {showSort && (
+                <>
+                  {/* backdrop */}
+                  <div
+                    onClick={() => setShowSort(false)}
+                    style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.92, y: -8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.92, y: -8 }}
+                    transition={{ duration: 0.18, ease: [0.32, 0.72, 0, 1] }}
+                    style={{
+                      position: 'absolute',
+                      top: 54,
+                      right: 0,
+                      zIndex: 100,
+                      backgroundColor: '#1A1A2E',
+                      border: '1px solid rgba(255,255,255,0.09)',
+                      borderRadius: 18,
+                      overflow: 'hidden',
+                      minWidth: 170,
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    {SORT_OPTIONS.map(({ label, value, Icon }) => {
+                      const isActive = sortBy === value
+                      return (
+                        <motion.div
+                          key={value}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => { setSortBy(value); setShowSort(false) }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            padding: '12px 16px',
+                            cursor: 'pointer',
+                            backgroundColor: isActive ? 'rgba(79,110,247,0.15)' : 'transparent',
+                          }}
+                        >
+                          <Icon size={15} color={isActive ? '#4F6EF7' : '#A1A1AA'} />
+                          <span style={{ color: isActive ? '#FFFFFF' : '#A1A1AA', fontSize: 13, fontWeight: isActive ? 700 : 400 }}>
+                            {label}
+                          </span>
+                        </motion.div>
+                      )
+                    })}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Chips row */}
@@ -391,6 +460,10 @@ export default function Home({ onProductClick }: HomeProps) {
           const matchSearch = !q || p.name.toLowerCase().includes(q) || p.meta.toLowerCase().includes(q)
           const matchCategory = activeCategory === 0 || p.category === CATEGORIES[activeCategory].label
           return matchSearch && matchCategory
+        }).sort((a, b) => {
+          if (sortBy === 'price-asc')  return parseFloat(a.price.slice(1)) - parseFloat(b.price.slice(1))
+          if (sortBy === 'price-desc') return parseFloat(b.price.slice(1)) - parseFloat(a.price.slice(1))
+          return 0
         }).map((product) => (
           <motion.div
             key={product.name}

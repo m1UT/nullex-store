@@ -112,7 +112,9 @@ export default function Liked({ onProductClick }: LikedProps) {
           padding: '0 20px',
         }}
       >
-        {LIKED_PRODUCTS.map((product) => (
+        {LIKED_PRODUCTS.filter((p) =>
+          activeFilter === 0 || p.category === FILTER_CHIPS[activeFilter].label
+        ).map((product) => (
           <motion.div
             key={product.name}
             whileTap={{ scale: 0.97 }}
