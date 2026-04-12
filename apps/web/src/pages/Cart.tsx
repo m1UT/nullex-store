@@ -137,6 +137,7 @@ export default function Cart() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
+                        touchAction: 'manipulation',
                       }}
                     >
                       <Minus size={14} color="#A1A1AA" />
@@ -168,6 +169,7 @@ export default function Cart() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
+                        touchAction: 'manipulation',
                       }}
                     >
                       <Plus size={14} color="#FFFFFF" />
@@ -222,6 +224,7 @@ export default function Cart() {
               borderRadius: 999,
               padding: '8px 12px',
               cursor: 'pointer',
+              touchAction: 'manipulation',
             }}
           >
             <Trash2 size={14} color="#FF3B30" />
