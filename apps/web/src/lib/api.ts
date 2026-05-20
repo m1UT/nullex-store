@@ -119,6 +119,23 @@ async function authFetch(url: string, options: RequestInit = {}): Promise<Respon
 
 // ── Public endpoints ──────────────────────────────────────────────────────────
 
+export interface ApiBanner {
+  id: number
+  imageUrl: string
+  action: string
+  actionValue: string | null
+  position: number
+  active: boolean
+}
+
+export async function fetchBanners(): Promise<ApiBanner[]> {
+  try {
+    const res = await fetch('/banners')
+    if (!res.ok) return []
+    return res.json()
+  } catch { return [] }
+}
+
 export async function fetchProducts(): Promise<Product[]> {
   const res = await fetch('/products')
   if (!res.ok) throw new Error(`HTTP ${res.status}`)

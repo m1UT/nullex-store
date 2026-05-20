@@ -2,14 +2,16 @@ import { useState } from 'react'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
+import Banners from './pages/Banners'
 import Orders from './pages/Orders'
 import Users from './pages/Users'
 
-type Page = 'dashboard' | 'products' | 'orders' | 'users'
+type Page = 'dashboard' | 'products' | 'banners' | 'orders' | 'users'
 
 const TABS: { key: Page; label: string }[] = [
   { key: 'dashboard', label: 'Дашборд' },
   { key: 'products',  label: 'Товары' },
+  { key: 'banners',   label: 'Баннеры' },
   { key: 'orders',    label: 'Заказы' },
   { key: 'users',     label: 'Пользователи' },
 ]
@@ -63,6 +65,7 @@ export default function App() {
       <main style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {page === 'dashboard' && <Dashboard />}
         {page === 'products'  && <Products />}
+        {page === 'banners'   && <Banners />}
         {page === 'orders'    && <Orders />}
         {page === 'users'     && <Users />}
       </main>

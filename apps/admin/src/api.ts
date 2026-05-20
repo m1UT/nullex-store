@@ -46,6 +46,10 @@ export const api = {
     const data: { url: string } = await res.json()
     return data.url
   },
+  banners: ()                                        => req<Banner[]>('GET', '/api/admin/banners'),
+  createBanner: (d: BannerInput)                     => req<Banner>('POST', '/api/admin/banners', d),
+  updateBanner: (id: number, d: Partial<BannerInput>) => req<Banner>('PUT', `/api/admin/banners/${id}`, d),
+  deleteBanner: (id: number)                         => req<void>('DELETE', `/api/admin/banners/${id}`),
   orders: ()                                         => req<Order[]>('GET', '/api/admin/orders'),
   updateOrder: (id: number, status: string)          => req<Order>('PATCH', `/api/admin/orders/${id}`, { status }),
   users: ()                                          => req<User[]>('GET', '/api/admin/users'),
@@ -92,6 +96,24 @@ export interface Order {
   createdAt: string
   user: { username: string | null; telegramId: string }
   items: { product: { name: string } }[]
+}
+
+export interface Banner {
+  id: number
+  imageUrl: string
+  action: string
+  actionValue: string | null
+  position: number
+  active: boolean
+  createdAt: string
+}
+
+export interface BannerInput {
+  imageUrl: string
+  action: string
+  actionValue?: string | null
+  position: number
+  active: boolean
 }
 
 export interface User {

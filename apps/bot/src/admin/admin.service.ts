@@ -122,4 +122,20 @@ export class AdminService {
     }
     return { sent, total: users.length }
   }
+
+  getBanners() {
+    return this.prisma.banner.findMany({ orderBy: { position: 'asc' } })
+  }
+
+  createBanner(data: { imageUrl: string; action: string; actionValue?: string; position: number; active: boolean }) {
+    return this.prisma.banner.create({ data })
+  }
+
+  updateBanner(id: number, data: { imageUrl?: string; action?: string; actionValue?: string | null; position?: number; active?: boolean }) {
+    return this.prisma.banner.update({ where: { id }, data })
+  }
+
+  deleteBanner(id: number) {
+    return this.prisma.banner.delete({ where: { id } })
+  }
 }

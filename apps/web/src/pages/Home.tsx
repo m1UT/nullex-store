@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
-import { fetchProducts } from '../lib/api'
+import { fetchProducts, fetchBanners, type ApiBanner } from '../lib/api'
 import { useStore } from '../lib/store'
 import { Heart } from 'lucide-react'
 
@@ -54,14 +54,36 @@ export default function Home({ onProductClick }: HomeProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const stickyWrapRef = useRef<HTMLDivElement>(null)
   const sortBtnRef = useRef<HTMLDivElement>(null)
+  const productsRef = useRef<HTMLDivElement>(null)
+
+  const [banners, setBanners] = useState<ApiBanner[]>([])
+  const [bannerIdx, setBannerIdx] = useState(0)
+  const bannerTouchX = useRef(0)
 
   useEffect(() => {
     fetchProducts().then(setProducts).catch(() => {})
+    fetchBanners().then(setBanners).catch(() => {})
     const interval = setInterval(() => {
       fetchProducts().then(setProducts).catch(() => {})
+      fetchBanners().then(setBanners).catch(() => {})
     }, 30_000)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    if (banners.length <= 1) return
+    const id = setInterval(() => setBannerIdx(i => (i + 1) % banners.length), 5000)
+    return () => clearInterval(id)
+  }, [banners.length])
+
+  const handleBannerClick = useCallback((banner: ApiBanner) => {
+    if (banner.action === 'scroll') {
+      productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else if (banner.action === 'product' && banner.actionValue) {
+      const product = products.find(p => p.id === banner.actionValue)
+      if (product) onProductClick(product)
+    }
+  }, [products, onProductClick])
 
   useEffect(() => {
     if (stickyWrapRef.current) setStickyH(stickyWrapRef.current.offsetHeight)
@@ -159,119 +181,84 @@ export default function Home({ onProductClick }: HomeProps) {
         </div>
       </div>
 
-      {/* Promo Banner */}
-      <div
-        style={{
-          margin: '8px 20px 16px',
-          background: 'linear-gradient(135deg, #3B1FA3 0%, #1B3FA8 50%, #0D0D4A 100%)',
-          borderRadius: 28,
-          height: 130,
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 20px',
-          position: 'relative',
-        }}
-      >
-        {/* Orbs */}
-        <div
-          style={{
-            position: 'absolute',
-            width: 200,
-            height: 200,
-            background: 'radial-gradient(ellipse at center, rgba(155,92,246,0.376) 0%, transparent 70%)',
-            borderRadius: '50%',
-            right: -20,
-            top: -40,
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            width: 140,
-            height: 140,
-            background: 'radial-gradient(ellipse at center, rgba(79,110,247,0.251) 0%, transparent 70%)',
-            borderRadius: '50%',
-            left: -40,
-            top: 40,
-            pointerEvents: 'none',
-          }}
-        />
-
-        {/* Left column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
+      {/* Banners Carousel */}
+      {banners.length > 0 ? (
+        <div style={{ margin: '8px 20px 16px', position: 'relative' }}>
           <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              backgroundColor: 'rgba(255,255,255,0.094)',
-              borderRadius: 999,
-              padding: '4px 10px',
-              alignSelf: 'flex-start',
+            style={{ borderRadius: 28, height: 150, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+            onTouchStart={e => { bannerTouchX.current = e.touches[0].clientX }}
+            onTouchEnd={e => {
+              const delta = bannerTouchX.current - e.changedTouches[0].clientX
+              if (Math.abs(delta) > 50) setBannerIdx(i => delta > 0 ? (i + 1) % banners.length : (i - 1 + banners.length) % banners.length)
             }}
+            onClick={() => handleBannerClick(banners[bannerIdx])}
           >
-            <Zap size={12} color="#A8FF3E" fill="#A8FF3E" />
-            <span style={{ color: '#A8FF3E', fontSize: 10, fontWeight: 700 }}>СПЕЦПРЕДЛОЖЕНИЕ</span>
+            {banners.map((b, i) => (
+              <img
+                key={b.id}
+                src={b.imageUrl}
+                alt=""
+                style={{
+                  position: 'absolute', inset: 0,
+                  width: '100%', height: '100%', objectFit: 'cover',
+                  opacity: i === bannerIdx ? 1 : 0,
+                  transition: 'opacity 0.4s ease',
+                  borderRadius: 28,
+                }}
+              />
+            ))}
           </div>
 
-          <div
-            style={{
-              color: '#FFFFFF',
-              fontSize: 20,
-              fontWeight: 700,
-              lineHeight: 1.2,
-              whiteSpace: 'pre-line',
-            }}
-          >
-            {'−20% на\nпервый заказ'}
-          </div>
-
-          <span style={{ color: 'rgba(255,255,255,0.627)', fontSize: 12 }}>
-            На всё цифровое ПО сегодня
-          </span>
+          {/* Dots */}
+          {banners.length > 1 && (
+            <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, pointerEvents: 'none' }}>
+              {banners.map((_, i) => (
+                <div key={i} style={{
+                  width: i === bannerIdx ? 20 : 5,
+                  height: 5, borderRadius: 3,
+                  backgroundColor: i === bannerIdx ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
+                  transition: 'width 0.3s ease',
+                }} />
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* Right column */}
+      ) : (
+        /* Static fallback banner */
         <div
           style={{
+            margin: '8px 20px 16px',
+            background: 'linear-gradient(135deg, #3B1FA3 0%, #1B3FA8 50%, #0D0D4A 100%)',
+            borderRadius: 28,
+            height: 130,
+            overflow: 'hidden',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            gap: 10,
+            justifyContent: 'space-between',
+            padding: '0 20px',
             position: 'relative',
-            zIndex: 1,
           }}
         >
-          <div
-            style={{
-              width: 70,
-              height: 70,
-              backgroundColor: 'rgba(255,255,255,0.082)',
-              borderRadius: 20,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Sparkles size={32} color="#A8FF3E" />
+          <div style={{ position: 'absolute', width: 200, height: 200, background: 'radial-gradient(ellipse at center, rgba(155,92,246,0.376) 0%, transparent 70%)', borderRadius: '50%', right: -20, top: -40, pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', width: 140, height: 140, background: 'radial-gradient(ellipse at center, rgba(79,110,247,0.251) 0%, transparent 70%)', borderRadius: '50%', left: -40, top: 40, pointerEvents: 'none' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.094)', borderRadius: 999, padding: '4px 10px', alignSelf: 'flex-start' }}>
+              <Zap size={12} color="#A8FF3E" fill="#A8FF3E" />
+              <span style={{ color: '#A8FF3E', fontSize: 10, fontWeight: 700 }}>СПЕЦПРЕДЛОЖЕНИЕ</span>
+            </div>
+            <div style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 700, lineHeight: 1.2, whiteSpace: 'pre-line' }}>{'−20% на\nпервый заказ'}</div>
+            <span style={{ color: 'rgba(255,255,255,0.627)', fontSize: 12 }}>На всё цифровое ПО сегодня</span>
           </div>
-
-          <motion.div
-            whileTap={{ scale: 0.94 }}
-            style={{
-              backgroundColor: '#A8FF3E',
-              borderRadius: 999,
-              padding: '8px 16px',
-              cursor: 'pointer',
-            }}
-          >
-            <span style={{ color: '#0D0D14', fontSize: 12, fontWeight: 700 }}>Купить</span>
-          </motion.div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, position: 'relative', zIndex: 1 }}>
+            <div style={{ width: 70, height: 70, backgroundColor: 'rgba(255,255,255,0.082)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Sparkles size={32} color="#A8FF3E" />
+            </div>
+            <motion.div whileTap={{ scale: 0.94 }} style={{ backgroundColor: '#A8FF3E', borderRadius: 999, padding: '8px 16px', cursor: 'pointer' }}>
+              <span style={{ color: '#0D0D14', fontSize: 12, fontWeight: 700 }}>Купить</span>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sentinel — placed before search+chips, triggers sticky */}
       <div ref={sentinelRef} style={{ height: 0 }} />
@@ -435,6 +422,7 @@ export default function Home({ onProductClick }: HomeProps) {
 
       {/* Product grid */}
       <div
+        ref={productsRef}
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',

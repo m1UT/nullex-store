@@ -122,4 +122,28 @@ export class AdminController {
   broadcast(@Body() body: { text: string }) {
     return this.admin.broadcast(body.text)
   }
+
+  @Get('banners')
+  getBanners() {
+    return this.admin.getBanners()
+  }
+
+  @Post('banners')
+  createBanner(@Body() body: { imageUrl: string; action: string; actionValue?: string; position: number; active: boolean }) {
+    return this.admin.createBanner(body)
+  }
+
+  @Put('banners/:id')
+  updateBanner(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { imageUrl?: string; action?: string; actionValue?: string | null; position?: number; active?: boolean },
+  ) {
+    return this.admin.updateBanner(id, body)
+  }
+
+  @Delete('banners/:id')
+  @HttpCode(204)
+  deleteBanner(@Param('id', ParseIntPipe) id: number) {
+    return this.admin.deleteBanner(id)
+  }
 }

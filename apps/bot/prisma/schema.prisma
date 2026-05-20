@@ -85,3 +85,13 @@ model CartItem {
 
   @@id([userId, productId])
 }
+
+model Banner {
+  id          Int      @id @default(autoincrement())
+  imageUrl    String
+  action      String   @default("none")
+  actionValue String?
+  position    Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}

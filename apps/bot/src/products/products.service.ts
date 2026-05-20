@@ -13,4 +13,11 @@ export class ProductsService {
   async findOne(id: number): Promise<Product | null> {
     return this.prisma.product.findUnique({ where: { id } }) as unknown as Promise<Product | null>
   }
+
+  findActiveBanners() {
+    return this.prisma.banner.findMany({
+      where: { active: true },
+      orderBy: { position: 'asc' },
+    })
+  }
 }
