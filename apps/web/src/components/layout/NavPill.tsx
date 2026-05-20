@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
-import { House, Heart, ShoppingCart, UserRound } from 'lucide-react'
+import { House, Heart, ShoppingCart } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { Tab } from '../../App'
 import { getTelegramUser, hapticSelection } from '../../lib/telegram'
+import { useStore } from '../../lib/store'
 
 interface NavPillProps {
   activeTab: Tab
@@ -17,7 +18,12 @@ const MAIN_TABS: { id: Tab; label: string; Icon: LucideIcon }[] = [
 
 export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
   const isProfileActive = activeTab === 'profile'
-  const photoUrl = getTelegramUser()?.photo_url
+  const { photoUrl } = useStore()
+  const tgUser = getTelegramUser()
+  const displayName = tgUser
+    ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ')
+    : 'U'
+  const initials = displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 
   return (
     <div
@@ -139,7 +145,18 @@ export default function NavPill({ activeTab, onTabChange }: NavPillProps) {
             }}
           />
         ) : (
-          <UserRound size={22} color="#FFFFFF" />
+          <div style={{
+            width: 38,
+            height: 38,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #9B5CF6 0%, #4F6EF7 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: isProfileActive ? '2px solid rgba(255,255,255,0.4)' : 'none',
+          }}>
+            <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700 }}>{initials}</span>
+          </div>
         )}
       </motion.button>
     </div>

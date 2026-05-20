@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, R
 import type { Product } from '../data/products'
 import type { BackendUser, CartItem, Order } from './api'
 import {
-  fetchMe, fetchLikes, fetchCart, fetchOrders,
+  fetchMe, fetchLikes, fetchCart, fetchOrders, fetchProfilePhoto,
   toggleLike as toggleLikeApi,
   addToCart as addToCartApi,
   removeFromCart as removeFromCartApi,
@@ -12,6 +12,7 @@ import {
 
 interface StoreValue {
   user: BackendUser | null
+  photoUrl: string | null
   likedProducts: Product[]
   likedIds: Set<number>
   cartItems: CartItem[]
@@ -33,6 +34,7 @@ export function useStore(): StoreValue {
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<BackendUser | null>(null)
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [likedProducts, setLikedProducts] = useState<Product[]>([])
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [orders, setOrders] = useState<Order[]>([])
@@ -43,12 +45,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   )
 
   useEffect(() => {
-    Promise.all([fetchMe(), fetchLikes(), fetchCart(), fetchOrders()]).then(
-      ([me, likes, cart, ords]) => {
+    Promise.all([fetchMe(), fetchLikes(), fetchCart(), fetchOrders(), fetchProfilePhoto()]).then(
+      ([me, likes, cart, ords, photo]) => {
         setUser(me)
         setLikedProducts(likes)
         setCartItems(cart)
         setOrders(ords)
+        setPhotoUrl(photo)
       },
     )
 
@@ -102,7 +105,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <StoreContext.Provider value={{
-      user, likedProducts, likedIds, cartItems, orders,
+      user, photoUrl, likedProducts, likedIds, cartItems, orders,
       toggleLike, addToCart, removeFromCart, clearCart, placeOrder,
     }}>
       {children}
