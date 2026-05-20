@@ -476,16 +476,14 @@ export default function Home({ onProductClick }: HomeProps) {
                 position: 'relative',
               }}
             >
-              <div
-                style={{
-                  position: 'absolute',
-                  width: 100,
-                  height: 100,
-                  background: product.glow,
-                  borderRadius: '50%',
-                }}
-              />
-              <product.Icon size={52} color={product.iconColor} style={{ position: 'relative', zIndex: 1 }} />
+              {product.images[0] ? (
+                <img src={product.images[0]} alt={product.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <>
+                  <div style={{ position: 'absolute', width: 100, height: 100, background: product.glow, borderRadius: '50%' }} />
+                  <product.Icon size={52} color={product.iconColor} style={{ position: 'relative', zIndex: 1 }} />
+                </>
+              )}
               <motion.div
                 whileTap={{ scale: 0.85 }}
                 onClick={(e) => { e.stopPropagation(); toggleLike(Number(product.id)) }}

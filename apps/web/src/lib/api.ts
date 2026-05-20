@@ -11,6 +11,9 @@ export interface ApiProduct {
   price: string
   stock: number
   thumbnailUrl: string | null
+  imageUrl1: string | null
+  imageUrl2: string | null
+  imageUrl3: string | null
 }
 
 export interface BackendUser {
@@ -91,6 +94,7 @@ export function mapApiProduct(p: ApiProduct): Product {
     bg: vis.bg,
     glow: vis.glow,
     tags: [],
+    images: [p.imageUrl1, p.imageUrl2, p.imageUrl3].filter((u): u is string => !!u),
   }
 }
 

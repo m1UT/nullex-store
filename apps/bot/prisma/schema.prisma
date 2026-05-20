@@ -27,6 +27,9 @@ model Product {
   stock        Int         @default(0)
   fileUrl      String?
   thumbnailUrl String?
+  imageUrl1    String?
+  imageUrl2    String?
+  imageUrl3    String?
   createdAt    DateTime    @default(now())
   orderItems   OrderItem[]
   likes        Like[]

@@ -51,6 +51,9 @@ export interface Product {
   price: string
   stock: number
   createdAt: string
+  imageUrl1: string | null
+  imageUrl2: string | null
+  imageUrl3: string | null
 }
 
 export interface ProductInput {
@@ -59,6 +62,9 @@ export interface ProductInput {
   category: 'GAMES' | 'SOFTWARE' | 'SUBSCRIPTIONS'
   price: number
   stock: number
+  imageUrl1?: string
+  imageUrl2?: string
+  imageUrl3?: string
 }
 
 export interface Order {

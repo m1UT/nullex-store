@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Share2, Heart, ShoppingCart, Check } from 'lucide-react'
 import type { Product } from '../data/products'
@@ -33,6 +34,25 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
   const productId = Number(product.id)
   const isLiked = likedIds.has(productId)
   const inCart = cartItems.some((i) => i.productId === productId)
+
+  const images = product.images
+  const total = images.length
+  const [activeIdx, setActiveIdx] = useState(0)
+  const touchStartX = useRef(0)
+
+  useEffect(() => {
+    if (total <= 1) return
+    const id = setInterval(() => setActiveIdx(i => (i + 1) % total), 5000)
+    return () => clearInterval(id)
+  }, [total])
+
+  const prev = () => setActiveIdx(i => (i - 1 + total) % total)
+  const next = () => setActiveIdx(i => (i + 1) % total)
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const delta = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(delta) > 50) delta > 0 ? next() : prev()
+  }
 
   return (
     <main
@@ -84,51 +104,59 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
         </motion.div>
       </div>
 
-      {/* Hero Image */}
+      {/* Hero / Carousel */}
       <div
-        style={{
-          width: '100%', height: 300,
-          background: product.bg,
-          position: 'relative',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          overflow: 'hidden',
-        }}
+        style={{ width: '100%', height: 300, position: 'relative', overflow: 'hidden', background: product.bg }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
-        {/* Glow */}
-        <div
-          style={{
-            position: 'absolute',
-            width: 240, height: 240,
-            background: product.glow,
-            borderRadius: '50%',
-          }}
-        />
-
-        {/* Icon frame */}
-        <div
-          style={{
-            width: 150, height: 150, borderRadius: 32,
-            background: 'linear-gradient(135deg, rgba(79,110,247,0.188) 0%, rgba(155,92,246,0.188) 100%)',
-            border: `1px solid ${product.iconColor}50`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            position: 'relative', zIndex: 1,
-          }}
-        >
-          <product.Icon size={80} color={product.iconColor} />
-        </div>
+        {total > 0 ? (
+          images.map((url, i) => (
+            <img
+              key={i}
+              src={url}
+              alt=""
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%', objectFit: 'cover',
+                opacity: i === activeIdx ? 1 : 0,
+                transition: 'opacity 0.4s ease',
+              }}
+            />
+          ))
+        ) : (
+          <>
+            <div style={{ position: 'absolute', width: 240, height: 240, background: product.glow, borderRadius: '50%', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+              width: 150, height: 150, borderRadius: 32,
+              background: 'linear-gradient(135deg, rgba(79,110,247,0.188) 0%, rgba(155,92,246,0.188) 100%)',
+              border: `1px solid ${product.iconColor}50`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <product.Icon size={80} color={product.iconColor} />
+            </div>
+          </>
+        )}
 
         {/* Dot pagination */}
-        <div
-          style={{
-            position: 'absolute', bottom: 20,
-            left: 0, right: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          }}
-        >
-          <div style={{ width: 24, height: 6, borderRadius: 3, backgroundColor: product.iconColor }} />
-          <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.25)' }} />
-          <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.25)' }} />
-        </div>
+        {total > 1 && (
+          <div style={{ position: 'absolute', bottom: 16, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            {images.map((_, i) => (
+              <div
+                key={i}
+                onClick={() => setActiveIdx(i)}
+                style={{
+                  width: i === activeIdx ? 24 : 6,
+                  height: 6, borderRadius: 3,
+                  backgroundColor: i === activeIdx ? '#FFFFFF' : 'rgba(255,255,255,0.35)',
+                  transition: 'width 0.3s ease, background-color 0.3s ease',
+                  cursor: 'pointer',
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Detail Info */}

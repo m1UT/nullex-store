@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { api, Product, ProductInput } from '../api'
 
 const CATEGORIES = ['GAMES', 'SOFTWARE', 'SUBSCRIPTIONS'] as const
-const EMPTY: ProductInput = { name: '', description: '', category: 'GAMES', price: 0, stock: 0 }
+const EMPTY: ProductInput = { name: '', description: '', category: 'GAMES', price: 0, stock: 0, imageUrl1: '', imageUrl2: '', imageUrl3: '' }
 
 const inputStyle: React.CSSProperties = {
   height: 40, borderRadius: 10, border: '1px solid rgba(255,255,255,0.09)',
@@ -25,7 +25,7 @@ export default function Products() {
   const openCreate = () => setModal({ mode: 'create', data: { ...EMPTY } })
   const openEdit = (p: Product) => setModal({
     mode: 'edit', id: p.id,
-    data: { name: p.name, description: p.description ?? '', category: p.category, price: Number(p.price), stock: p.stock },
+    data: { name: p.name, description: p.description ?? '', category: p.category, price: Number(p.price), stock: p.stock, imageUrl1: p.imageUrl1 ?? '', imageUrl2: p.imageUrl2 ?? '', imageUrl3: p.imageUrl3 ?? '' },
   })
 
   const save = async () => {
@@ -144,6 +144,23 @@ export default function Products() {
                 <label style={labelStyle}>Остаток</label>
                 <input style={inputStyle} type="number" min="0"
                   value={modal.data.stock} onChange={e => set('stock', Number(e.target.value))} />
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Изображения (URL, до 3 штук)</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {(['imageUrl1', 'imageUrl2', 'imageUrl3'] as const).map((key, i) => (
+                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ color: '#52525B', fontSize: 12, width: 16, flexShrink: 0 }}>{i + 1}</span>
+                    <input
+                      style={inputStyle}
+                      placeholder="https://..."
+                      value={(modal.data[key] as string) ?? ''}
+                      onChange={e => set(key, e.target.value)}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 

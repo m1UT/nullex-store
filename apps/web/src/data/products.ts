@@ -15,6 +15,7 @@ export interface Product {
   glow: string
   tags: string[]
   description: string
+  images: string[]
 }
 
 export const PRODUCTS: Product[] = [
@@ -30,6 +31,7 @@ export const PRODUCTS: Product[] = [
     iconColor: '#9B5CF6',
     bg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)',
     glow: 'radial-gradient(ellipse at center, rgba(155,92,246,0.42) 0%, transparent 70%)',
+    images: [],
     tags: ['Шутер', 'Мультиплеер', 'Инди'],
     description:
       'Динамичный шутер в неоновом киберпанк-мире. 60fps, онлайн-мультиплеер до 20 игроков, еженедельные обновления. Мгновенная загрузка.',
@@ -46,6 +48,7 @@ export const PRODUCTS: Product[] = [
     iconColor: '#A8FF3E',
     bg: 'linear-gradient(135deg, #0A2A1A 0%, #1A0A3A 100%)',
     glow: 'radial-gradient(ellipse at center, rgba(168,255,62,0.30) 0%, transparent 70%)',
+    images: [],
     tags: ['Стратегия', 'РПГ', 'Инди'],
     description:
       'Пошаговая тактическая RPG с процедурно-генерируемыми подземельями. Сотни часов геймплея, полная русская локализация.',
@@ -62,6 +65,7 @@ export const PRODUCTS: Product[] = [
     iconColor: '#4F6EF7',
     bg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)',
     glow: 'radial-gradient(ellipse at center, rgba(79,110,247,0.35) 0%, transparent 70%)',
+    images: [],
     tags: ['IDE', 'Разработка', 'Кроссплатформа'],
     description:
       'Профессиональный набор инструментов для разработчиков: редактор кода, дебаггер и CI/CD интеграции. Лицензия на 1 год, все платформы.',
@@ -78,6 +82,7 @@ export const PRODUCTS: Product[] = [
     iconColor: '#A8FF3E',
     bg: 'linear-gradient(135deg, #0A1A0A 0%, #1A0A2A 100%)',
     glow: 'radial-gradient(ellipse at center, rgba(168,255,62,0.28) 0%, transparent 70%)',
+    images: [],
     tags: ['Безопасность', 'VPN', 'Пароли'],
     description:
       'Комплексная защита: менеджер паролей, встроенный VPN и антивирус в одном приложении. Поддержка до 5 устройств.',
@@ -94,6 +99,7 @@ export const PRODUCTS: Product[] = [
     iconColor: '#FF6BF8',
     bg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)',
     glow: 'radial-gradient(ellipse at center, rgba(255,107,248,0.30) 0%, transparent 70%)',
+    images: [],
     tags: ['Стриминг', '4K', 'Без рекламы'],
     description:
       'Безлимитный доступ к тысячам фильмов и сериалов в 4K. Без рекламы, офлайн-загрузка, до 4 экранов одновременно.',
@@ -110,6 +116,7 @@ export const PRODUCTS: Product[] = [
     iconColor: '#4F6EF7',
     bg: 'linear-gradient(135deg, #1A0A1A 0%, #0A1A2A 100%)',
     glow: 'radial-gradient(ellipse at center, rgba(79,110,247,0.28) 0%, transparent 70%)',
+    images: [],
     tags: ['Облако', '2TB', 'Шифрование'],
     description:
       '2TB облачного хранилища с автоматической синхронизацией между всеми устройствами. Сквозное шифрование AES-256.',
