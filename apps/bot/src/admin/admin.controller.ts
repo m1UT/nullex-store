@@ -1,15 +1,45 @@
+import * as path from 'path'
+import * as fs from 'fs'
 import {
   Controller, Get, Post, Put, Delete, Patch,
   Param, Body, ParseIntPipe, UseGuards, HttpCode,
+  UseInterceptors, UploadedFile, BadRequestException,
 } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { diskStorage } from 'multer'
 import { AdminGuard } from './admin.guard'
 import { AdminService } from './admin.service'
 import { Category, OrderStatus } from '@prisma/client'
+
+const UPLOADS_DIR = path.join(process.cwd(), 'uploads')
 
 @Controller('api/admin')
 @UseGuards(AdminGuard)
 export class AdminController {
   constructor(private readonly admin: AdminService) {}
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: (_req, _file, cb) => {
+        if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true })
+        cb(null, UPLOADS_DIR)
+      },
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname)
+        cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`)
+      },
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (file.mimetype.startsWith('image/')) cb(null, true)
+      else cb(new BadRequestException('Only image files allowed'), false)
+    },
+  }))
+  uploadImage(@UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('No file uploaded')
+    return { url: `/uploads/${file.filename}` }
+  }
 
   @Get('stats')
   getStats() {

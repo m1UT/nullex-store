@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { api, Product, ProductInput } from '../api'
+import { useEffect, useRef, useState } from 'react'
+import { api, Product, ProductInput, resolveImageUrl } from '../api'
 
 const CATEGORIES = ['GAMES', 'SOFTWARE', 'SUBSCRIPTIONS'] as const
 const EMPTY: ProductInput = { name: '', description: '', category: 'GAMES', price: 0, stock: 0, imageUrl1: '', imageUrl2: '', imageUrl3: '' }
@@ -18,6 +18,8 @@ export default function Products() {
   const [products, setProducts] = useState<Product[]>([])
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; data: ProductInput; id?: number } | null>(null)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState<Record<number, boolean>>({})
+  const fileRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)]
 
   const load = () => api.products().then(setProducts)
   useEffect(() => { load() }, [])
@@ -47,6 +49,18 @@ export default function Products() {
 
   const set = (key: keyof ProductInput, value: string | number) =>
     setModal(m => m ? { ...m, data: { ...m.data, [key]: value } } : null)
+
+  const handleFileChange = async (idx: number, file: File | undefined) => {
+    if (!file) return
+    const key = (['imageUrl1', 'imageUrl2', 'imageUrl3'] as const)[idx]
+    setUploading(u => ({ ...u, [idx]: true }))
+    try {
+      const url = await api.uploadImage(file)
+      set(key, url)
+    } catch { /* ignore, keep current value */ } finally {
+      setUploading(u => ({ ...u, [idx]: false }))
+    }
+  }
 
   return (
     <div>
@@ -148,19 +162,76 @@ export default function Products() {
             </div>
 
             <div>
-              <label style={labelStyle}>Изображения (URL, до 3 штук)</label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {(['imageUrl1', 'imageUrl2', 'imageUrl3'] as const).map((key, i) => (
-                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ color: '#52525B', fontSize: 12, width: 16, flexShrink: 0 }}>{i + 1}</span>
-                    <input
-                      style={inputStyle}
-                      placeholder="https://..."
-                      value={(modal.data[key] as string) ?? ''}
-                      onChange={e => set(key, e.target.value)}
-                    />
-                  </div>
-                ))}
+              <label style={labelStyle}>Изображения (до 3 штук)</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {(['imageUrl1', 'imageUrl2', 'imageUrl3'] as const).map((key, i) => {
+                  const url = (modal.data[key] as string) ?? ''
+                  const resolved = resolveImageUrl(url)
+                  return (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ color: '#52525B', fontSize: 12, width: 16, flexShrink: 0 }}>{i + 1}</span>
+
+                      {/* Preview thumbnail */}
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 8, flexShrink: 0,
+                        border: '1px solid rgba(255,255,255,0.09)',
+                        backgroundColor: '#1A1A2E',
+                        overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        {resolved
+                          ? <img src={resolved} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          : <span style={{ color: '#3F3F46', fontSize: 18 }}>+</span>
+                        }
+                      </div>
+
+                      {/* URL input */}
+                      <input
+                        style={{ ...inputStyle, flex: 1 }}
+                        placeholder="https://... или загрузите файл"
+                        value={url}
+                        onChange={e => set(key, e.target.value)}
+                      />
+
+                      {/* Hidden file input */}
+                      <input
+                        ref={fileRefs[i]}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={e => handleFileChange(i, e.target.files?.[0])}
+                      />
+
+                      {/* Upload button */}
+                      <button
+                        type="button"
+                        onClick={() => fileRefs[i].current?.click()}
+                        disabled={uploading[i]}
+                        style={{
+                          height: 40, padding: '0 12px', borderRadius: 8, flexShrink: 0,
+                          border: '1px solid rgba(255,255,255,0.09)', background: '#1A1A2E',
+                          color: uploading[i] ? '#52525B' : '#A1A1AA', fontSize: 12,
+                          cursor: uploading[i] ? 'wait' : 'pointer',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {uploading[i] ? '...' : 'Загрузить'}
+                      </button>
+
+                      {/* Clear button */}
+                      {url && (
+                        <button
+                          type="button"
+                          onClick={() => set(key, '')}
+                          style={{
+                            height: 40, width: 40, borderRadius: 8, flexShrink: 0,
+                            border: 'none', background: 'rgba(255,59,48,0.12)',
+                            color: '#FF3B30', fontSize: 16, cursor: 'pointer',
+                          }}
+                        >×</button>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
 

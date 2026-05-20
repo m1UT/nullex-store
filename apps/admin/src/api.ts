@@ -1,5 +1,11 @@
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
+export function resolveImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  if (url.startsWith('http')) return url
+  return `${BASE}${url}`
+}
+
 function token() {
   return localStorage.getItem('admin_token') ?? ''
 }
@@ -28,6 +34,18 @@ export const api = {
   createProduct: (d: ProductInput)                   => req<Product>('POST', '/api/admin/products', d),
   updateProduct: (id: number, d: Partial<ProductInput>) => req<Product>('PUT', `/api/admin/products/${id}`, d),
   deleteProduct: (id: number)                        => req<void>('DELETE', `/api/admin/products/${id}`),
+  uploadImage: async (file: File): Promise<string> => {
+    const form = new FormData()
+    form.append('file', file)
+    const res = await fetch(`${BASE}/api/admin/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token()}` },
+      body: form,
+    })
+    if (!res.ok) throw new Error('Upload failed')
+    const data: { url: string } = await res.json()
+    return data.url
+  },
   orders: ()                                         => req<Order[]>('GET', '/api/admin/orders'),
   updateOrder: (id: number, status: string)          => req<Order>('PATCH', `/api/admin/orders/${id}`, { status }),
   users: ()                                          => req<User[]>('GET', '/api/admin/users'),
