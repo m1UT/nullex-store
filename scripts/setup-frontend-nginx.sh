@@ -6,7 +6,7 @@ PNPM=$(which pnpm 2>/dev/null || echo /root/.local/share/pnpm/pnpm)
 echo "=== [1/4] Rebuilding frontend ==="
 cd /opt/nullex-store
 git pull
-$PNPM install --frozen-lockfile
+$PNPM install --no-frozen-lockfile
 $PNPM --filter '@nullex/web' build
 
 echo "=== [2/4] Installing nginx ==="
