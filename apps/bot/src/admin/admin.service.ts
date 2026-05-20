@@ -55,14 +55,18 @@ export class AdminService {
     return this.prisma.product.delete({ where: { id } })
   }
 
-  getOrders() {
-    return this.prisma.order.findMany({
+  async getOrders() {
+    const orders = await this.prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: { username: true, telegramId: true } },
         items: { include: { product: { select: { name: true } } } },
       },
     })
+    return orders.map((o) => ({
+      ...o,
+      user: { ...o.user, telegramId: o.user.telegramId.toString() },
+    }))
   }
 
   updateOrderStatus(id: number, status: OrderStatus) {
