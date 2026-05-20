@@ -7,5 +7,5 @@ git pull
 
 /root/.nvm/versions/node/v24.13.0/bin/node /root/.nvm/versions/node/v24.13.0/bin/pnpm --filter 'web' build
 
-nginx -s reload
-echo "Frontend deployed and nginx reloaded"
+systemctl restart frontend.service
+echo "Frontend deployed and restarted"
