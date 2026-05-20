@@ -7,9 +7,10 @@ echo "=== [1/4] Rebuilding frontend ==="
 cd /opt/nullex-store
 git pull
 $PNPM install --no-frozen-lockfile
-$PNPM --filter '@nullex/web' build
+$PNPM --filter 'web' build
 
 echo "=== [2/4] Installing nginx ==="
+apt-get update -qq
 apt-get install -y nginx
 
 echo "=== [3/4] Configuring nginx ==="
