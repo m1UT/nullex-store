@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Wallet, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
+import { Wallet, ExternalLink, X, Copy, Check } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
 import { useStore } from '../lib/store'
@@ -40,9 +40,14 @@ export default function Profile() {
 
   const displayName = tgUser
     ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ')
-    : 'm1UTlucky'
-  const userHandle = tgUser?.username ? `@${tgUser.username}` : '@m1utlucky'
+    : (user?.username ?? 'Пользователь')
+  const userHandle = tgUser?.username
+    ? `@${tgUser.username}`
+    : user?.username
+    ? `@${user.username}`
+    : null
   const photoUrl = tgUser?.photo_url ?? null
+  const initials = displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
   const balanceStr = user ? `$${parseFloat(user.balance).toFixed(2)}` : '$0.00'
 
   const inventoryItems: InventoryItem[] = orders.flatMap((order) =>
@@ -176,7 +181,7 @@ export default function Profile() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             ) : (
-              <UserRound size={36} color="#FFFFFF" />
+              <span style={{ color: '#FFFFFF', fontSize: 28, fontWeight: 700 }}>{initials}</span>
             )}
           </div>
         </div>
@@ -196,19 +201,21 @@ export default function Profile() {
           {displayName}
         </div>
 
-        <div
-          style={{
-            position: 'absolute',
-            top: 224,
-            left: 0,
-            width: '100%',
-            textAlign: 'center',
-            color: '#6E6E70',
-            fontSize: 13,
-          }}
-        >
-          {userHandle}
-        </div>
+        {userHandle && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 224,
+              left: 0,
+              width: '100%',
+              textAlign: 'center',
+              color: '#6E6E70',
+              fontSize: 13,
+            }}
+          >
+            {userHandle}
+          </div>
+        )}
       </div>
 
       {/* ── Balance card ── */}
