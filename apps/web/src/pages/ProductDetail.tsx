@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Share2, Heart, ShoppingCart, Check } from 'lucide-react'
 import type { Product } from '../data/products'
 import { useStore } from '../lib/store'
+import { tg } from '../lib/telegram'
 
 interface ProductDetailProps {
   product: Product
@@ -35,6 +36,30 @@ export default function ProductDetail({ product, onBack, onGoToCart }: ProductDe
   const productId = Number(product.id)
   const isLiked = likedIds.has(productId)
   const inCart = cartItems.some((i) => i.productId === productId)
+
+  const [shared, setShared] = useState(false)
+
+  const handleShare = async () => {
+    const botLink = (import.meta.env.VITE_BOT_LINK as string | undefined)?.replace(/\/$/, '')
+    const productUrl = botLink ? `${botLink}?startapp=product_${productId}` : undefined
+    const text = `${product.name} — ${product.price}`
+
+    // Telegram native share dialog (preferred in TMA)
+    if (productUrl) {
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(text)}`
+      try { tg()?.openTelegramLink(shareUrl); setShared(true); setTimeout(() => setShared(false), 1500); return } catch { /* fallthrough */ }
+    }
+
+    // Web Share API (works in modern mobile browsers)
+    if (navigator.share) {
+      try { await navigator.share({ title: product.name, text, ...(productUrl ? { url: productUrl } : {}) }); return } catch { /* cancelled */ }
+    }
+
+    // Clipboard fallback
+    try { await navigator.clipboard.writeText(productUrl ?? text) } catch { /* ignore */ }
+    setShared(true)
+    setTimeout(() => setShared(false), 1500)
+  }
 
   const images = product.images
   const total = images.length
@@ -93,15 +118,17 @@ export default function ProductDetail({ product, onBack, onGoToCart }: ProductDe
 
         <motion.div
           whileTap={{ scale: 0.92 }}
+          onClick={handleShare}
           style={{
             width: 40, height: 40, borderRadius: 20,
-            backgroundColor: '#1A1A2E',
-            border: '1px solid rgba(255,255,255,0.094)',
+            backgroundColor: shared ? 'rgba(168,255,62,0.15)' : '#1A1A2E',
+            border: `1px solid ${shared ? 'rgba(168,255,62,0.35)' : 'rgba(255,255,255,0.094)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer',
+            transition: 'background-color 0.2s, border-color 0.2s',
           }}
         >
-          <Share2 size={18} color="#FFFFFF" />
+          {shared ? <Check size={18} color="#A8FF3E" /> : <Share2 size={18} color="#FFFFFF" />}
         </motion.div>
       </div>
 

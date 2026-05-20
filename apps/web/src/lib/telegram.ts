@@ -46,6 +46,8 @@ interface TelegramWebApp {
     onClick: (fn: () => void) => void
   }
   themeParams: Record<string, string>
+  openLink: (url: string, options?: { try_instant_view?: boolean }) => void
+  openTelegramLink: (url: string) => void
 }
 
 function applySafeTop(): void {
