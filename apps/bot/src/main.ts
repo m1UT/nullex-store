@@ -1,5 +1,10 @@
 import 'dotenv/config'
 import 'reflect-metadata'
+
+// JSON.stringify doesn't support BigInt by default
+;(BigInt.prototype as unknown as Record<string, unknown>).toJSON = function () {
+  return this.toString()
+}
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 
