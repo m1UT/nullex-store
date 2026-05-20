@@ -16,7 +16,7 @@ interface LikedProps {
 }
 
 export default function Liked({ onProductClick }: LikedProps) {
-  const { user, likedProducts, toggleLike, addToCart } = useStore()
+  const { user, likedProducts, toggleLike } = useStore()
   const [activeFilter, setActiveFilter] = useState(0)
 
   const filtered = likedProducts.filter(
@@ -202,28 +202,7 @@ export default function Liked({ onProductClick }: LikedProps) {
                 <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{product.name}</span>
                 <span style={{ color: '#71717A', fontSize: 11 }}>{product.cardMeta}</span>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginTop: 2,
-                  }}
-                >
-                  <span style={{ color: '#A8FF3E', fontSize: 13, fontWeight: 700 }}>{product.price}</span>
-                  <motion.div
-                    whileTap={{ scale: 0.92 }}
-                    onClick={(e) => { e.stopPropagation(); addToCart(Number(product.id)) }}
-                    style={{
-                      backgroundColor: '#A8FF3E',
-                      borderRadius: 999,
-                      padding: '6px 12px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <span style={{ color: '#0D0D14', fontSize: 11, fontWeight: 700 }}>В корзину</span>
-                  </motion.div>
-                </div>
+                <span style={{ color: '#A8FF3E', fontSize: 13, fontWeight: 700, marginTop: 2 }}>{product.price}</span>
               </div>
             </motion.div>
           ))}
