@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
 import { InjectBot } from 'nestjs-telegraf'
 import { Telegraf } from 'telegraf'
 import { PrismaService } from '../prisma/prisma.service'
@@ -73,39 +73,57 @@ export class MeService {
   }
 
   async placeOrder(userId: number, telegramId: string) {
-    const cartItems = await this.prisma.cartItem.findMany({
-      where: { userId },
-      include: { product: true },
-    })
-    if (cartItems.length === 0) return []
+    const orders = await this.prisma.$transaction(async (tx) => {
+      const cartItems = await tx.cartItem.findMany({
+        where: { userId },
+        include: { product: true },
+      })
+      if (cartItems.length === 0) return []
 
-    const orders = []
-    for (const cartItem of cartItems) {
-      const order = await this.prisma.order.create({
-        data: {
-          userId,
-          total: cartItem.product.price,
-          status: 'DELIVERED',
-          items: {
-            create: [{ productId: cartItem.productId, price: cartItem.product.price }],
-          },
-        },
-        include: { items: { include: { product: true } } },
+      const totalCost = cartItems.reduce((sum, item) => sum + Number(item.product.price), 0)
+      const user = await tx.user.findUnique({ where: { id: userId } })
+
+      if (!user || Number(user.balance) < totalCost) {
+        throw new HttpException('Insufficient balance', HttpStatus.PAYMENT_REQUIRED)
+      }
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { balance: { decrement: totalCost } },
       })
 
+      const orders = []
+      for (const cartItem of cartItems) {
+        const order = await tx.order.create({
+          data: {
+            userId,
+            total: cartItem.product.price,
+            status: 'DELIVERED',
+            items: {
+              create: [{ productId: cartItem.productId, price: cartItem.product.price }],
+            },
+          },
+          include: { items: { include: { product: true } } },
+        })
+        orders.push(order)
+      }
+
+      await tx.cartItem.deleteMany({ where: { userId } })
+      return orders
+    })
+
+    // Send Telegram notifications outside transaction (best-effort)
+    for (const order of orders) {
       const code = `ITEM-${String(order.items[0].id).padStart(6, '0')}`
       try {
         await this.bot.telegram.sendMessage(
           telegramId,
-          `✅ *${cartItem.product.name}* — $${Number(cartItem.product.price).toFixed(2)}\n\n🔑 Код активации:\n\`${code}\``,
+          `✅ *${order.items[0].product.name}* — $${Number(order.total).toFixed(2)}\n\n🔑 Код активации:\n\`${code}\``,
           { parse_mode: 'Markdown' },
         )
       } catch { /* user may not have started the bot */ }
-
-      orders.push(order)
     }
 
-    await this.prisma.cartItem.deleteMany({ where: { userId } })
     return orders
   }
 }

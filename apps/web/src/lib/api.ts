@@ -187,10 +187,11 @@ export async function fetchOrders(): Promise<Order[]> {
   } catch { return [] }
 }
 
-export async function placeOrder(): Promise<Order | null> {
+export async function placeOrder(): Promise<{ ok: true; orders: Order[] } | { ok: false; error: string }> {
   try {
     const res = await authFetch('/me/orders', { method: 'POST' })
-    if (!res.ok) return null
-    return res.json()
-  } catch { return null }
+    if (res.status === 402) return { ok: false, error: 'insufficient_balance' }
+    if (!res.ok) return { ok: false, error: 'unknown' }
+    return { ok: true, orders: await res.json() }
+  } catch { return { ok: false, error: 'network' } }
 }

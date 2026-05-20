@@ -6,6 +6,7 @@ import { useStore } from '../lib/store'
 export default function Cart() {
   const { user, cartItems, removeFromCart, clearCart, placeOrder } = useStore()
   const [checkingOut, setCheckingOut] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const balanceStr = user ? `$${parseFloat(user.balance).toFixed(2)}` : '$0.00'
   const total = cartItems.reduce(
@@ -16,8 +17,16 @@ export default function Cart() {
   const handleCheckout = async () => {
     if (checkingOut || cartItems.length === 0) return
     setCheckingOut(true)
-    await placeOrder()
+    setCheckoutError(null)
+    const result = await placeOrder()
     setCheckingOut(false)
+    if (!result.ok) {
+      setCheckoutError(
+        result.error === 'insufficient_balance'
+          ? 'Недостаточно средств на балансе'
+          : 'Ошибка при оплате. Попробуйте ещё раз',
+      )
+    }
   }
 
   return (
@@ -223,6 +232,13 @@ export default function Cart() {
               </span>
             </div>
           </div>
+
+          {/* Error message */}
+          {checkoutError && (
+            <div style={{ margin: '12px 20px 0', padding: '10px 14px', borderRadius: 12, backgroundColor: 'rgba(255,59,48,0.1)', border: '1px solid rgba(255,59,48,0.25)' }}>
+              <span style={{ color: '#FF3B30', fontSize: 13 }}>{checkoutError}</span>
+            </div>
+          )}
 
           {/* Checkout Button */}
           <div style={{ padding: '16px 20px 0' }}>

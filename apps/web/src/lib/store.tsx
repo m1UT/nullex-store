@@ -20,7 +20,7 @@ interface StoreValue {
   addToCart: (productId: number) => Promise<void>
   removeFromCart: (productId: number) => Promise<void>
   clearCart: () => Promise<void>
-  placeOrder: () => Promise<boolean>
+  placeOrder: () => Promise<{ ok: true } | { ok: false; error: string }>
 }
 
 const StoreContext = createContext<StoreValue | null>(null)
@@ -79,12 +79,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const placeOrder = useCallback(async () => {
-    const order = await placeOrderApi()
-    if (!order) return false
+    const result = await placeOrderApi()
+    if (!result.ok) return result
     setCartItems([])
     const ords = await fetchOrders()
     setOrders(ords)
-    return true
+    return { ok: true as const }
   }, [])
 
   return (
