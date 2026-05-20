@@ -74,7 +74,7 @@ export class MeService {
 
   async getPhotoUrl(telegramId: string): Promise<string | null> {
     try {
-      const photos = await this.bot.telegram.getUserProfilePhotos(Number(telegramId), { limit: 1 })
+      const photos = await this.bot.telegram.getUserProfilePhotos(Number(telegramId))
       if (!photos.total_count) return null
       const fileId = photos.photos[0][photos.photos[0].length - 1].file_id
       const file = await this.bot.telegram.getFile(fileId)
