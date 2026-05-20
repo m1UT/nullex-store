@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { ArrowLeft, Share2, Heart, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, Share2, Heart, ShoppingCart, Check } from 'lucide-react'
 import type { Product } from '../data/products'
+import { useStore } from '../lib/store'
 
 interface ProductDetailProps {
   product: Product
@@ -28,6 +29,11 @@ const TAG_COLORS: Record<string, { text: string; border: string }> = {
 }
 
 export default function ProductDetail({ product, onBack }: ProductDetailProps) {
+  const { likedIds, cartItems, toggleLike, addToCart } = useStore()
+  const productId = Number(product.id)
+  const isLiked = likedIds.has(productId)
+  const inCart = cartItems.some((i) => i.productId === productId)
+
   return (
     <main
       style={{
@@ -135,15 +141,16 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
           </div>
           <motion.div
             whileTap={{ scale: 0.9 }}
+            onClick={() => toggleLike(productId)}
             style={{
               width: 44, height: 44, borderRadius: 22,
-              backgroundColor: '#1A1A2E',
-              border: '1px solid rgba(255,255,255,0.094)',
+              backgroundColor: isLiked ? 'rgba(255,59,48,0.15)' : '#1A1A2E',
+              border: `1px solid ${isLiked ? 'rgba(255,107,107,0.35)' : 'rgba(255,255,255,0.094)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', flexShrink: 0,
             }}
           >
-            <Heart size={20} color="#9B5CF6" />
+            <Heart size={20} color="#FF6B6B" fill={isLiked ? '#FF6B6B' : 'none'} />
           </motion.div>
         </div>
 
@@ -203,15 +210,28 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
         </div>
 
         <motion.button
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: inCart || product.stock === 0 ? 1 : 0.95 }}
+          onClick={() => !inCart && product.stock > 0 && addToCart(productId)}
           style={{
             display: 'flex', alignItems: 'center', gap: 10,
-            backgroundColor: '#A8FF3E', borderRadius: 999,
-            padding: '16px 28px', border: 'none', cursor: 'pointer',
+            backgroundColor: inCart ? '#1A1A2E' : product.stock === 0 ? '#2A2A3A' : '#A8FF3E',
+            borderRadius: 999, padding: '16px 28px', border: 'none',
+            cursor: inCart || product.stock === 0 ? 'default' : 'pointer',
           }}
         >
-          <ShoppingCart size={18} color="#0D0D14" />
-          <span style={{ color: '#0D0D14', fontSize: 15, fontWeight: 700 }}>В корзину</span>
+          {inCart ? (
+            <>
+              <Check size={18} color="#A8FF3E" />
+              <span style={{ color: '#A8FF3E', fontSize: 15, fontWeight: 700 }}>В корзине</span>
+            </>
+          ) : product.stock === 0 ? (
+            <span style={{ color: '#71717A', fontSize: 15, fontWeight: 700 }}>Нет в наличии</span>
+          ) : (
+            <>
+              <ShoppingCart size={18} color="#0D0D14" />
+              <span style={{ color: '#0D0D14', fontSize: 15, fontWeight: 700 }}>В корзину</span>
+            </>
+          )}
         </motion.button>
       </div>
     </main>
