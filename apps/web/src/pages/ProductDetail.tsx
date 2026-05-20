@@ -42,21 +42,33 @@ export default function ProductDetail({ product, onBack, onGoToCart }: ProductDe
   const handleShare = async () => {
     const botLink = (import.meta.env.VITE_BOT_LINK as string | undefined)?.replace(/\/$/, '')
     const productUrl = botLink ? `${botLink}?startapp=product_${productId}` : undefined
-    const text = `${product.name} — ${product.price}`
+    const shareText = productUrl
+      ? `${product.name} — ${product.price}\n${productUrl}`
+      : `${product.name} — ${product.price}`
 
-    // Telegram native share dialog (preferred in TMA)
+    // Telegram native share dialog — url embedded in text so it always appears
     if (productUrl) {
-      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(text)}`
-      try { tg()?.openTelegramLink(shareUrl); setShared(true); setTimeout(() => setShared(false), 1500); return } catch { /* fallthrough */ }
+      const tgShare = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(`${product.name} — ${product.price}`)}`
+      try {
+        tg()?.openLink(tgShare)
+        setShared(true); setTimeout(() => setShared(false), 1500); return
+      } catch { /* fallthrough */ }
+      try {
+        tg()?.openTelegramLink(tgShare)
+        setShared(true); setTimeout(() => setShared(false), 1500); return
+      } catch { /* fallthrough */ }
     }
 
-    // Web Share API (works in modern mobile browsers)
+    // Web Share API
     if (navigator.share) {
-      try { await navigator.share({ title: product.name, text, ...(productUrl ? { url: productUrl } : {}) }); return } catch { /* cancelled */ }
+      try {
+        await navigator.share({ title: product.name, text: shareText })
+        return
+      } catch { /* cancelled */ }
     }
 
     // Clipboard fallback
-    try { await navigator.clipboard.writeText(productUrl ?? text) } catch { /* ignore */ }
+    try { await navigator.clipboard.writeText(shareText) } catch { /* ignore */ }
     setShared(true)
     setTimeout(() => setShared(false), 1500)
   }
