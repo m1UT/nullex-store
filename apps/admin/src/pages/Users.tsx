@@ -122,10 +122,10 @@ export default function Users() {
                 onClick={() => adjust(1)}
                 disabled={saving || !amount || Number(amount) <= 0}
                 style={{
-                  flex: 1, height: 42, borderRadius: 10, border: 'none',
+                  flex: 1, height: 42, borderRadius: 10,
+                  border: '1px solid rgba(168,255,62,0.3)',
                   background: saving ? '#1A1A2E' : 'rgba(168,255,62,0.15)',
                   color: '#A8FF3E', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                  border: '1px solid rgba(168,255,62,0.3)',
                   opacity: !amount || Number(amount) <= 0 ? 0.4 : 1,
                 } as React.CSSProperties}
               >
@@ -135,10 +135,10 @@ export default function Users() {
                 onClick={() => adjust(-1)}
                 disabled={saving || !amount || Number(amount) <= 0}
                 style={{
-                  flex: 1, height: 42, borderRadius: 10, border: 'none',
+                  flex: 1, height: 42, borderRadius: 10,
+                  border: '1px solid rgba(255,59,48,0.25)',
                   background: 'rgba(255,59,48,0.1)',
                   color: '#FF3B30', fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                  border: '1px solid rgba(255,59,48,0.25)',
                   opacity: !amount || Number(amount) <= 0 ? 0.4 : 1,
                 } as React.CSSProperties}
               >
