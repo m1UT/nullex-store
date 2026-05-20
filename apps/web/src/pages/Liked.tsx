@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wallet, Heart, LayoutGrid, Gamepad2, Code2, PlayCircle } from 'lucide-react'
+import { Wallet, Heart, LayoutGrid, Gamepad2, Code2, PlayCircle, ShoppingCart, Check } from 'lucide-react'
 import { useStore } from '../lib/store'
 import type { Product } from '../data/products'
 
@@ -16,7 +16,7 @@ interface LikedProps {
 }
 
 export default function Liked({ onProductClick }: LikedProps) {
-  const { user, likedProducts, toggleLike } = useStore()
+  const { user, likedProducts, cartItems, toggleLike, addToCart } = useStore()
   const [activeFilter, setActiveFilter] = useState(0)
 
   const filtered = likedProducts.filter(
@@ -201,7 +201,32 @@ export default function Liked({ onProductClick }: LikedProps) {
                 <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{product.name}</span>
                 <span style={{ color: '#71717A', fontSize: 11 }}>{product.cardMeta}</span>
 
-                <span style={{ color: '#A8FF3E', fontSize: 13, fontWeight: 700, marginTop: 2 }}>{product.price}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 }}>
+                  <span style={{ color: '#A8FF3E', fontSize: 13, fontWeight: 700 }}>{product.price}</span>
+                  {(() => {
+                    const productId = Number(product.id)
+                    const inCart = cartItems.some(i => i.productId === productId)
+                    const outOfStock = product.stock === 0
+                    return (
+                      <motion.div
+                        whileTap={{ scale: inCart || outOfStock ? 1 : 0.88 }}
+                        onClick={e => { e.stopPropagation(); if (!inCart && !outOfStock) addToCart(productId) }}
+                        style={{
+                          width: 30, height: 30, borderRadius: 10,
+                          backgroundColor: inCart ? 'rgba(168,255,62,0.12)' : outOfStock ? 'rgba(255,255,255,0.05)' : '#A8FF3E',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: inCart || outOfStock ? 'default' : 'pointer',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {inCart
+                          ? <Check size={14} color="#A8FF3E" />
+                          : <ShoppingCart size={14} color={outOfStock ? '#3F3F46' : '#0D0D14'} />
+                        }
+                      </motion.div>
+                    )
+                  })()}
+                </div>
               </div>
             </motion.div>
           ))}
