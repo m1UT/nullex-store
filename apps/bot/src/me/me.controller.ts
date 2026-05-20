@@ -20,6 +20,12 @@ export class MeController {
     return this.resolveUser(req)
   }
 
+  @Get('photo')
+  async getPhoto(@Req() req: any) {
+    const url = await this.me.getPhotoUrl(String(req.tgUser.id))
+    return { url }
+  }
+
   @Get('likes')
   async getLikes(@Req() req: any) {
     const u = await this.resolveUser(req)

@@ -124,6 +124,15 @@ export async function fetchProducts(): Promise<Product[]> {
 
 // ── /me endpoints ─────────────────────────────────────────────────────────────
 
+export async function fetchProfilePhoto(): Promise<string | null> {
+  try {
+    const res = await authFetch('/me/photo')
+    if (!res.ok) return null
+    const data: { url: string | null } = await res.json()
+    return data.url
+  } catch { return null }
+}
+
 export async function fetchMe(): Promise<BackendUser | null> {
   try {
     const res = await authFetch('/me')

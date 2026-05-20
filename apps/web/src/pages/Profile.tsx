@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Wallet, ExternalLink, X, Copy, Check } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
 import { useStore } from '../lib/store'
-import { CATEGORY_VISUALS } from '../lib/api'
+import { CATEGORY_VISUALS, fetchProfilePhoto } from '../lib/api'
 
 interface InventoryItem {
   id: number
@@ -46,8 +46,10 @@ export default function Profile() {
     : user?.username
     ? `@${user.username}`
     : null
-  const photoUrl = tgUser?.photo_url ?? null
   const initials = displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+  useEffect(() => { fetchProfilePhoto().then(setPhotoUrl) }, [])
   const balanceStr = user ? `$${parseFloat(user.balance).toFixed(2)}` : '$0.00'
 
   const inventoryItems: InventoryItem[] = orders.flatMap((order) =>
