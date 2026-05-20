@@ -11,11 +11,15 @@ export class MeService {
   ) {}
 
   async getOrCreate(telegramId: bigint, username?: string) {
-    const user = await this.prisma.user.upsert({
-      where: { telegramId },
-      update: { username: username ?? undefined },
-      create: { telegramId, username },
-    })
+    const existing = await this.prisma.user.findUnique({ where: { telegramId } })
+    if (existing) {
+      if (username !== undefined && existing.username !== username) {
+        const updated = await this.prisma.user.update({ where: { telegramId }, data: { username } })
+        return { ...updated, telegramId: updated.telegramId.toString() }
+      }
+      return { ...existing, telegramId: existing.telegramId.toString() }
+    }
+    const user = await this.prisma.user.create({ data: { telegramId, username } })
     return { ...user, telegramId: user.telegramId.toString() }
   }
 
