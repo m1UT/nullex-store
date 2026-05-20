@@ -6,11 +6,12 @@ export class MeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrCreate(telegramId: bigint, username?: string) {
-    return this.prisma.user.upsert({
+    const user = await this.prisma.user.upsert({
       where: { telegramId },
       update: { username: username ?? undefined },
       create: { telegramId, username },
     })
+    return { ...user, telegramId: user.telegramId.toString() }
   }
 
   async getLikedProducts(userId: number) {

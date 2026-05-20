@@ -69,8 +69,8 @@ export class AdminService {
     return this.prisma.order.update({ where: { id }, data: { status } })
   }
 
-  getUsers() {
-    return this.prisma.user.findMany({
+  async getUsers() {
+    const users = await this.prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -81,5 +81,6 @@ export class AdminService {
         _count: { select: { orders: true } },
       },
     })
+    return users.map((u) => ({ ...u, telegramId: u.telegramId.toString() }))
   }
 }
