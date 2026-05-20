@@ -75,16 +75,11 @@ export class MeService {
   async getPhotoUrl(telegramId: string): Promise<string | null> {
     try {
       const photos = await this.bot.telegram.getUserProfilePhotos(Number(telegramId))
-      console.log('[photo] total_count:', photos.total_count)
       if (!photos.total_count) return null
       const fileId = photos.photos[0][photos.photos[0].length - 1].file_id
       const file = await this.bot.telegram.getFile(fileId)
-      console.log('[photo] file_path:', file.file_path)
       return `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`
-    } catch (e) {
-      console.error('[photo] error:', e)
-      return null
-    }
+    } catch { return null }
   }
 
   async placeOrder(userId: number, telegramId: string) {

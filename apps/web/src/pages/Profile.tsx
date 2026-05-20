@@ -169,7 +169,7 @@ export default function Profile() {
               width: 76,
               height: 76,
               borderRadius: 38,
-              backgroundColor: '#1A1A2E',
+              background: photoUrl ? '#1A1A2E' : 'linear-gradient(135deg, #9B5CF6 0%, #4F6EF7 100%)',
               overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
@@ -183,7 +183,7 @@ export default function Profile() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             ) : (
-              <span style={{ color: '#FFFFFF', fontSize: 28, fontWeight: 700 }}>{initials}</span>
+              <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700, letterSpacing: -0.5 }}>{initials}</span>
             )}
           </div>
         </div>
