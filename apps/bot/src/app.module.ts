@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module'
 import { OrdersModule } from './orders/orders.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { AdminModule } from './admin/admin.module'
+import { MeModule } from './me/me.module'
 // import { RedisModule } from './redis/redis.module' // temporarily disabled
 
 @Module({
@@ -20,6 +21,7 @@ import { AdminModule } from './admin/admin.module'
     UsersModule,
     OrdersModule,
     AdminModule,
+    MeModule,
   ],
 })
 export class AppModule {}

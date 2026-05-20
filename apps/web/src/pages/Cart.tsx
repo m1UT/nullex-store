@@ -1,46 +1,25 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Trash2,
-  Gamepad2,
-  Code2,
-  PlayCircle,
-  Lock,
-  Minus,
-  Plus,
-  Wallet,
-} from 'lucide-react'
-
-const CART_ITEMS = [
-  {
-    name: 'Neon Arena',
-    sub: 'Игры · Цифровая копия',
-    price: '$24.99',
-    qty: 1,
-    Icon: Gamepad2,
-    iconColor: '#9B5CF6',
-    thumbBg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)',
-  },
-  {
-    name: 'DevKit Pro',
-    sub: 'ПО · Лицензия на 1 год',
-    price: '$49.99',
-    qty: 1,
-    Icon: Code2,
-    iconColor: '#4F6EF7',
-    thumbBg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)',
-  },
-  {
-    name: 'StreamPass',
-    sub: 'Подписка · 1 месяц',
-    price: '$9.99',
-    qty: 1,
-    Icon: PlayCircle,
-    iconColor: '#FF6BF8',
-    thumbBg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)',
-  },
-]
+import { Trash2, Wallet, Lock } from 'lucide-react'
+import { useStore } from '../lib/store'
 
 export default function Cart() {
+  const { user, cartItems, removeFromCart, clearCart, placeOrder } = useStore()
+  const [checkingOut, setCheckingOut] = useState(false)
+
+  const balanceStr = user ? `$${parseFloat(user.balance).toFixed(2)}` : '$0.00'
+  const total = cartItems.reduce(
+    (sum, item) => sum + parseFloat(item.product.price.replace('$', '')),
+    0,
+  )
+
+  const handleCheckout = async () => {
+    if (checkingOut || cartItems.length === 0) return
+    setCheckingOut(true)
+    await placeOrder()
+    setCheckingOut(false)
+  }
+
   return (
     <main
       style={{
@@ -61,7 +40,6 @@ export default function Cart() {
         }}
       >
         <span style={{ color: '#FFFFFF', fontSize: 26, fontWeight: 700 }}>Корзина</span>
-
         <div
           style={{
             display: 'flex',
@@ -74,217 +52,206 @@ export default function Cart() {
           }}
         >
           <Wallet size={15} color="#A8FF3E" />
-          <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 600 }}>$1,240</span>
+          <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 600 }}>{balanceStr}</span>
         </div>
       </div>
 
-      {/* Cart list */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {/* Items */}
-        {CART_ITEMS.map((item, idx) => (
-          <div key={item.name}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                padding: '16px 20px',
-              }}
-            >
-              {/* Thumbnail */}
-              <div
-                style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 18,
-                  background: item.thumbBg,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <item.Icon size={32} color={item.iconColor} />
-              </div>
-
-              {/* Details */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700 }}>{item.name}</span>
-                <span style={{ color: '#71717A', fontSize: 12 }}>{item.sub}</span>
-
-                {/* Bottom row: price + stepper */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#A8FF3E', fontSize: 15, fontWeight: 700 }}>{item.price}</span>
-
-                  {/* Quantity stepper */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      backgroundColor: '#1A1A2E',
-                      borderRadius: 999,
-                      border: '1px solid rgba(255,255,255,0.094)',
-                      padding: 4,
-                    }}
-                  >
-                    <motion.div
-                      whileTap={{ scale: 0.88 }}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 999,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        touchAction: 'manipulation',
-                      }}
-                    >
-                      <Minus size={14} color="#A1A1AA" />
-                    </motion.div>
-
-                    <span
-                      style={{
-                        color: '#FFFFFF',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        width: 24,
-                        height: 28,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {item.qty}
-                    </span>
-
-                    <motion.div
-                      whileTap={{ scale: 0.88 }}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 999,
-                        background: 'linear-gradient(135deg, #4F6EF7 0%, #9B5CF6 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        touchAction: 'manipulation',
-                      }}
-                    >
-                      <Plus size={14} color="#FFFFFF" />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {idx < CART_ITEMS.length - 1 && (
-              <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.071)', margin: '0 20px' }} />
-            )}
-          </div>
-        ))}
-
-        {/* Divider after items */}
-        <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.071)', marginTop: 4 }} />
-
-        {/* Badge + Clear row */}
+      {cartItems.length === 0 ? (
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 20px',
+            justifyContent: 'center',
+            height: 200,
           }}
         >
-          {/* Count badge */}
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 12,
-              backgroundColor: '#4F6EF7',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ color: '#FFFFFF', fontSize: 16 }}>{CART_ITEMS.length + 1}</span>
+          <span style={{ color: '#71717A', fontSize: 14 }}>Корзина пуста</span>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* Items */}
+            {cartItems.map((item, idx) => (
+              <div key={item.productId}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 14,
+                    padding: '16px 20px',
+                  }}
+                >
+                  {/* Thumbnail */}
+                  <div
+                    style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: 18,
+                      background: item.product.bg,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <item.product.Icon size={32} color={item.product.iconColor} />
+                  </div>
+
+                  {/* Details */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 700 }}>
+                      {item.product.name}
+                    </span>
+                    <span style={{ color: '#71717A', fontSize: 12 }}>{item.product.cardMeta}</span>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <span style={{ color: '#A8FF3E', fontSize: 15, fontWeight: 700 }}>
+                        {item.product.price}
+                      </span>
+
+                      <motion.div
+                        whileTap={{ scale: 0.88 }}
+                        onClick={() => removeFromCart(item.productId)}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: 10,
+                          backgroundColor: 'rgba(255,59,48,0.1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Trash2 size={15} color="#FF3B30" />
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+
+                {idx < cartItems.length - 1 && (
+                  <div
+                    style={{
+                      height: 1,
+                      backgroundColor: 'rgba(255,255,255,0.071)',
+                      margin: '0 20px',
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+
+            {/* Divider after items */}
+            <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.071)', marginTop: 4 }} />
+
+            {/* Count badge + Clear row */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: 8,
+                padding: '12px 20px',
+              }}
+            >
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 12,
+                  backgroundColor: '#4F6EF7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 600 }}>
+                  {cartItems.length}
+                </span>
+              </div>
+
+              <motion.div
+                whileTap={{ scale: 0.93 }}
+                onClick={clearCart}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  backgroundColor: 'rgba(255,59,48,0.125)',
+                  borderRadius: 999,
+                  padding: '8px 12px',
+                  cursor: 'pointer',
+                  touchAction: 'manipulation',
+                }}
+              >
+                <Trash2 size={14} color="#FF3B30" />
+                <span style={{ color: '#FF3B30', fontSize: 13, fontWeight: 600 }}>Очистить</span>
+              </motion.div>
+            </div>
           </div>
 
-          {/* Clear button */}
-          <motion.div
-            whileTap={{ scale: 0.93 }}
+          {/* Order Summary */}
+          <div
             style={{
+              margin: '0 20px',
+              borderRadius: 24,
+              backgroundColor: '#12121F',
+              border: '1px solid rgba(255,255,255,0.071)',
+              padding: 20,
               display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              backgroundColor: 'rgba(255,59,48,0.125)',
-              borderRadius: 999,
-              padding: '8px 12px',
-              cursor: 'pointer',
-              touchAction: 'manipulation',
+              flexDirection: 'column',
+              gap: 12,
             }}
           >
-            <Trash2 size={14} color="#FF3B30" />
-            <span style={{ color: '#FF3B30', fontSize: 13, fontWeight: 600 }}>Очистить</span>
-          </motion.div>
-        </div>
-      </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#A1A1AA', fontSize: 14 }}>Позиций</span>
+              <span style={{ color: '#FFFFFF', fontSize: 14 }}>{cartItems.length}</span>
+            </div>
 
-      {/* Order Summary */}
-      <div
-        style={{
-          margin: '0 20px',
-          borderRadius: 24,
-          backgroundColor: '#12121F',
-          border: '1px solid rgba(255,255,255,0.071)',
-          padding: 20,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#A1A1AA', fontSize: 14 }}>Сумма</span>
-          <span style={{ color: '#FFFFFF', fontSize: 14 }}>$84.97</span>
-        </div>
+            <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.094)' }} />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#A1A1AA', fontSize: 14 }}>Скидка (20%)</span>
-          <span style={{ color: '#A8FF3E', fontSize: 14 }}>−$16.99</span>
-        </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Итого</span>
+              <span style={{ color: '#A8FF3E', fontSize: 18, fontWeight: 700 }}>
+                ${total.toFixed(2)}
+              </span>
+            </div>
+          </div>
 
-        <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.094)' }} />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 700 }}>Итого</span>
-          <span style={{ color: '#A8FF3E', fontSize: 18, fontWeight: 700 }}>$67.98</span>
-        </div>
-      </div>
-
-      {/* Checkout Button */}
-      <div style={{ padding: '16px 20px 0' }}>
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          style={{
-            width: '100%',
-            height: 54,
-            backgroundColor: '#A8FF3E',
-            borderRadius: 999,
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            cursor: 'pointer',
-          }}
-        >
-          <Lock size={18} color="#0D0D14" />
-          <span style={{ color: '#0D0D14', fontSize: 16, fontWeight: 700 }}>Оплатить безопасно</span>
-        </motion.button>
-      </div>
+          {/* Checkout Button */}
+          <div style={{ padding: '16px 20px 0' }}>
+            <motion.button
+              whileTap={{ scale: checkingOut ? 1 : 0.97 }}
+              onClick={handleCheckout}
+              disabled={checkingOut}
+              style={{
+                width: '100%',
+                height: 54,
+                backgroundColor: checkingOut ? '#6B9A2E' : '#A8FF3E',
+                borderRadius: 999,
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                cursor: checkingOut ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+            >
+              <Lock size={18} color="#0D0D14" />
+              <span style={{ color: '#0D0D14', fontSize: 16, fontWeight: 700 }}>
+                {checkingOut ? 'Обработка...' : 'Оплатить безопасно'}
+              </span>
+            </motion.button>
+          </div>
+        </>
+      )}
     </main>
   )
 }

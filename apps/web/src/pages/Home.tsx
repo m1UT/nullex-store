@@ -20,6 +20,8 @@ import {
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
 import { fetchProducts } from '../lib/api'
+import { useStore } from '../lib/store'
+import { Heart } from 'lucide-react'
 
 const CATEGORIES = [
   { label: 'All',           Icon: LayoutGrid },
@@ -39,6 +41,7 @@ const SORT_OPTIONS = [
 ]
 
 export default function Home({ onProductClick }: HomeProps) {
+  const { user, likedIds, toggleLike } = useStore()
   const [products, setProducts] = useState<Product[]>(PRODUCTS)
   const [activeCategory, setActiveCategory] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
@@ -145,7 +148,9 @@ export default function Home({ onProductClick }: HomeProps) {
             }}
           >
             <Wallet size={15} color="#A8FF3E" />
-            <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 600 }}>$1,240</span>
+            <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 600 }}>
+              ${user ? parseFloat(user.balance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : '0'}
+            </span>
           </div>
         </div>
       </div>
@@ -477,6 +482,23 @@ export default function Home({ onProductClick }: HomeProps) {
                 }}
               />
               <product.Icon size={52} color={product.iconColor} style={{ position: 'relative', zIndex: 1 }} />
+              <motion.div
+                whileTap={{ scale: 0.85 }}
+                onClick={(e) => { e.stopPropagation(); toggleLike(Number(product.id)) }}
+                style={{
+                  position: 'absolute', top: 8, right: 8, zIndex: 2,
+                  width: 28, height: 28, borderRadius: 14,
+                  backgroundColor: likedIds.has(Number(product.id)) ? 'rgba(255,59,48,0.2)' : 'rgba(0,0,0,0.3)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <Heart
+                  size={14}
+                  color="#FF6B6B"
+                  fill={likedIds.has(Number(product.id)) ? '#FF6B6B' : 'none'}
+                />
+              </motion.div>
             </div>
 
             {/* Info */}

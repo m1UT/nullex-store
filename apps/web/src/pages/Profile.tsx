@@ -1,42 +1,90 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Wallet, Gamepad2, Sword, Code2, Shield, PlayCircle, Cloud, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
+import { Wallet, ExternalLink, UserRound, X, Copy, Check } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { getTelegramUser } from '../lib/telegram'
+import { useStore } from '../lib/store'
+import { CATEGORY_VISUALS } from '../lib/api'
 
-const INVENTORY_ITEMS = [
-  { id: 1, name: 'Neon Arena',     tag: 'Игры · Шутер',        Icon: Gamepad2,   iconColor: '#9B5CF6', iconBg: 'linear-gradient(135deg, #1B0A3A 0%, #0A1A4A 100%)', code: 'NA-PRO-X7K2-M9QW-4521' },
-  { id: 2, name: 'Shadow Tactics', tag: 'Игры · Стратегия',    Icon: Sword,      iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A2A1A 0%, #1A0A3A 100%)', code: 'ST-ACT-K3P9-W2NQ-8834' },
-  { id: 3, name: 'DevKit Pro',     tag: 'ПО · Разработка',     Icon: Code2,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A0A 0%, #2A1060 100%)', code: 'DK-PRO-Z1R7-T4XC-6612' },
-  { id: 4, name: 'VaultGuard',     tag: 'ПО · Безопасность',   Icon: Shield,     iconColor: '#A8FF3E', iconBg: 'linear-gradient(135deg, #0A1A0A 0%, #1A0A2A 100%)', code: 'VG-SEC-L8M3-Q5KV-3390' },
-  { id: 5, name: 'StreamPass',     tag: 'Подписка · Стриминг', Icon: PlayCircle, iconColor: '#FF6BF8', iconBg: 'linear-gradient(135deg, #0A1A2A 0%, #2A0A30 100%)', code: 'SP-STR-B2H6-N9JX-7745' },
-  { id: 6, name: 'CloudMax',       tag: 'Подписка · Хранилище',Icon: Cloud,      iconColor: '#4F6EF7', iconBg: 'linear-gradient(135deg, #1A0A1A 0%, #0A1A2A 100%)', code: 'CM-CLD-Y4W1-F7GD-2208' },
-]
+interface InventoryItem {
+  id: number
+  name: string
+  tag: string
+  Icon: LucideIcon
+  iconColor: string
+  iconBg: string
+  code: string
+}
 
-type InventoryItem = typeof INVENTORY_ITEMS[number]
+interface TxItem {
+  id: number
+  name: string
+  Icon: LucideIcon
+  iconColor: string
+  iconBg: string
+  date: string
+  amount: string
+  positive: boolean
+}
 
-const TX_ITEMS = [
-  { id: 1, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '01 мар 2026', amount: '+$50.00',  positive: true  },
-  { id: 2, name: 'Neon Arena',         Icon: Gamepad2,   iconColor: '#9B5CF6', iconBg: '#1B0A3A', date: '28 фев 2026', amount: '−$24.99',  positive: false },
-  { id: 3, name: 'DevKit Pro',         Icon: Code2,      iconColor: '#4F6EF7', iconBg: '#1A0A0A', date: '14 фев 2026', amount: '−$49.99',  positive: false },
-  { id: 4, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '10 фев 2026', amount: '+$100.00', positive: true  },
-  { id: 5, name: 'StreamPass',         Icon: PlayCircle, iconColor: '#FF6BF8', iconBg: '#0A1A2A', date: '20 янв 2026', amount: '−$9.99',   positive: false },
-  { id: 6, name: 'Shadow Tactics',     Icon: Sword,      iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '22 дек 2025', amount: '−$19.99',  positive: false },
-  { id: 7, name: 'Пополнение баланса', Icon: Wallet,     iconColor: '#A8FF3E', iconBg: '#0A2A1A', date: '15 дек 2025', amount: '+$200.00', positive: true  },
-]
+function formatDate(iso: string): string {
+  const d = new Date(iso)
+  const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
+  return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`
+}
 
 export default function Profile() {
-  const user = getTelegramUser()
-  const displayName = user
-    ? [user.first_name, user.last_name].filter(Boolean).join(' ')
+  const tgUser = getTelegramUser()
+  const { user, orders } = useStore()
+
+  const displayName = tgUser
+    ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ')
     : 'm1UTlucky'
-  const userHandle = user?.username ? `@${user.username}` : '@m1utlucky'
-  const photoUrl = user?.photo_url ?? null
+  const userHandle = tgUser?.username ? `@${tgUser.username}` : '@m1utlucky'
+  const photoUrl = tgUser?.photo_url ?? null
+  const balanceStr = user ? `$${parseFloat(user.balance).toFixed(2)}` : '$0.00'
+
+  const inventoryItems: InventoryItem[] = orders.flatMap((order) =>
+    order.items.map((item) => {
+      const vis = CATEGORY_VISUALS[item.product.category] ?? CATEGORY_VISUALS.GAMES
+      return {
+        id: item.id,
+        name: item.product.name,
+        tag: vis.meta,
+        Icon: vis.Icon,
+        iconColor: vis.iconColor,
+        iconBg: vis.bg,
+        code: `ITEM-${String(item.id).padStart(6, '0')}`,
+      }
+    }),
+  )
+
+  const txItems: TxItem[] = orders.map((order) => {
+    const firstItem = order.items[0]
+    const vis = firstItem
+      ? (CATEGORY_VISUALS[firstItem.product.category] ?? CATEGORY_VISUALS.GAMES)
+      : CATEGORY_VISUALS.GAMES
+    const name =
+      order.items.length === 1
+        ? (firstItem?.product.name ?? 'Заказ')
+        : `Заказ #${order.id} (${order.items.length} товара)`
+    return {
+      id: order.id,
+      name,
+      Icon: vis.Icon,
+      iconColor: vis.iconColor,
+      iconBg: vis.bg,
+      date: formatDate(order.createdAt),
+      amount: `−$${Number(order.total).toFixed(2)}`,
+      positive: false,
+    }
+  })
+
   const [showAllInv, setShowAllInv] = useState(false)
   const [showAllTx, setShowAllTx] = useState(false)
   const [activationItem, setActivationItem] = useState<InventoryItem | null>(null)
   const [copied, setCopied] = useState(false)
-
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -45,8 +93,8 @@ export default function Profile() {
     })
   }
 
-  const visibleInv = showAllInv ? INVENTORY_ITEMS : INVENTORY_ITEMS.slice(0, 4)
-  const visibleTx  = showAllTx  ? TX_ITEMS         : TX_ITEMS.slice(0, 4)
+  const visibleInv = showAllInv ? inventoryItems : inventoryItems.slice(0, 4)
+  const visibleTx  = showAllTx  ? txItems         : txItems.slice(0, 4)
 
   return (
     <>
@@ -68,7 +116,6 @@ export default function Profile() {
           paddingTop: 'var(--safe-top, 0px)',
         }}
       >
-        {/* Purple glow — top-right */}
         <div
           style={{
             position: 'absolute',
@@ -81,7 +128,6 @@ export default function Profile() {
             pointerEvents: 'none',
           }}
         />
-        {/* Blue glow — bottom-left */}
         <div
           style={{
             position: 'absolute',
@@ -135,7 +181,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Username */}
         <div
           style={{
             position: 'absolute',
@@ -151,7 +196,6 @@ export default function Profile() {
           {displayName}
         </div>
 
-        {/* Handle */}
         <div
           style={{
             position: 'absolute',
@@ -182,19 +226,10 @@ export default function Profile() {
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span
-              style={{
-                color: '#A8FF3E70',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: 2,
-              }}
-            >
+            <span style={{ color: '#A8FF3E70', fontSize: 10, fontWeight: 600, letterSpacing: 2 }}>
               BALANCE
             </span>
-            <span style={{ color: '#F5F5F0', fontSize: 22, fontWeight: 700 }}>
-              $1,240.00
-            </span>
+            <span style={{ color: '#F5F5F0', fontSize: 22, fontWeight: 700 }}>{balanceStr}</span>
           </div>
           <div
             style={{
@@ -223,94 +258,113 @@ export default function Profile() {
           }}
         >
           <span style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700 }}>Инвентарь</span>
-          <span
-            onClick={() => setShowAllInv(true)}
-            style={{ color: '#4F6EF7', fontSize: 13, cursor: 'pointer', display: showAllInv ? 'none' : undefined }}
-          >
-            Показать все
-          </span>
+          {!showAllInv && inventoryItems.length > 4 && (
+            <span
+              onClick={() => setShowAllInv(true)}
+              style={{ color: '#4F6EF7', fontSize: 13, cursor: 'pointer' }}
+            >
+              Показать все
+            </span>
+          )}
         </div>
-        <div
-          style={{
-            borderRadius: 16,
-            backgroundColor: '#12121F',
-            border: '1px solid #FFFFFF10',
-            overflow: 'hidden',
-          }}
-        >
-          {visibleInv.map((item, i) => (
-            <div key={item.id}>
-              <div
-                style={{
-                  height: 68,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0 14px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div
+
+        {inventoryItems.length === 0 ? (
+          <div
+            style={{
+              borderRadius: 16,
+              backgroundColor: '#12121F',
+              border: '1px solid #FFFFFF10',
+              height: 68,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span style={{ color: '#71717A', fontSize: 13 }}>Нет купленных товаров</span>
+          </div>
+        ) : (
+          <div
+            style={{
+              borderRadius: 16,
+              backgroundColor: '#12121F',
+              border: '1px solid #FFFFFF10',
+              overflow: 'hidden',
+            }}
+          >
+            {visibleInv.map((item, i) => (
+              <div key={item.id}>
+                <div
+                  style={{
+                    height: 68,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 14px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        background: item.iconBg,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <item.Icon size={18} color={item.iconColor} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{item.name}</span>
+                      <span style={{ color: '#71717A', fontSize: 11 }}>{item.tag}</span>
+                    </div>
+                  </div>
+                  <motion.div
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => { setActivationItem(item); setCopied(false) }}
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 12,
-                      background: item.iconBg,
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      backgroundColor: '#9B5CF61A',
+                      border: '1px solid #9B5CF640',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
+                      cursor: 'pointer',
                     }}
                   >
-                    <item.Icon size={18} color={item.iconColor} />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{item.name}</span>
-                    <span style={{ color: '#71717A', fontSize: 11 }}>{item.tag}</span>
-                  </div>
+                    <ExternalLink size={16} color="#9B5CF6" />
+                  </motion.div>
                 </div>
-                <motion.div
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => { setActivationItem(item); setCopied(false) }}
+                {i < visibleInv.length - 1 && (
+                  <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
+                )}
+              </div>
+            ))}
+            {showAllInv && (
+              <>
+                <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
+                <div
+                  onClick={() => setShowAllInv(false)}
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    backgroundColor: '#9B5CF61A',
-                    border: '1px solid #9B5CF640',
+                    height: 44,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    flexShrink: 0,
                     cursor: 'pointer',
                   }}
                 >
-                  <ExternalLink size={16} color="#9B5CF6" />
-                </motion.div>
-              </div>
-              {i < visibleInv.length - 1 && (
-                <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
-              )}
-            </div>
-          ))}
-          {showAllInv && (
-            <>
-              <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
-              <div
-                onClick={() => setShowAllInv(false)}
-                style={{
-                  height: 44,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <span style={{ color: '#4F6EF7', fontSize: 13 }}>Скрыть</span>
-              </div>
-            </>
-          )}
-        </div>
+                  <span style={{ color: '#4F6EF7', fontSize: 13 }}>Скрыть</span>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── Transaction History ── */}
@@ -324,86 +378,105 @@ export default function Profile() {
           }}
         >
           <span style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 700 }}>История транзакций</span>
-          <span
-            onClick={() => setShowAllTx(true)}
-            style={{ color: '#4F6EF7', fontSize: 13, cursor: 'pointer', display: showAllTx ? 'none' : undefined }}
-          >
-            Показать все
-          </span>
+          {!showAllTx && txItems.length > 4 && (
+            <span
+              onClick={() => setShowAllTx(true)}
+              style={{ color: '#4F6EF7', fontSize: 13, cursor: 'pointer' }}
+            >
+              Показать все
+            </span>
+          )}
         </div>
-        <div
-          style={{
-            borderRadius: 16,
-            backgroundColor: '#12121F',
-            border: '1px solid #FFFFFF10',
-            overflow: 'hidden',
-          }}
-        >
-          {visibleTx.map((item, i) => (
-            <div key={item.id}>
-              <div
-                style={{
-                  height: 68,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0 14px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div
+
+        {txItems.length === 0 ? (
+          <div
+            style={{
+              borderRadius: 16,
+              backgroundColor: '#12121F',
+              border: '1px solid #FFFFFF10',
+              height: 68,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span style={{ color: '#71717A', fontSize: 13 }}>Нет транзакций</span>
+          </div>
+        ) : (
+          <div
+            style={{
+              borderRadius: 16,
+              backgroundColor: '#12121F',
+              border: '1px solid #FFFFFF10',
+              overflow: 'hidden',
+            }}
+          >
+            {visibleTx.map((item, i) => (
+              <div key={item.id}>
+                <div
+                  style={{
+                    height: 68,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 14px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        background: item.iconBg,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <item.Icon size={18} color={item.iconColor} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{item.name}</span>
+                      <span style={{ color: '#71717A', fontSize: 11 }}>{item.date}</span>
+                    </div>
+                  </div>
+                  <span
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 12,
-                      backgroundColor: item.iconBg,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      color: item.positive ? '#A8FF3E' : '#FF4444',
+                      fontSize: 13,
+                      fontWeight: 700,
                       flexShrink: 0,
                     }}
                   >
-                    <item.Icon size={18} color={item.iconColor} />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{item.name}</span>
-                    <span style={{ color: '#71717A', fontSize: 11 }}>{item.date}</span>
-                  </div>
+                    {item.amount}
+                  </span>
                 </div>
-                <span
+                {i < visibleTx.length - 1 && (
+                  <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
+                )}
+              </div>
+            ))}
+            {showAllTx && (
+              <>
+                <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
+                <div
+                  onClick={() => setShowAllTx(false)}
                   style={{
-                    color: item.positive ? '#A8FF3E' : '#FF4444',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    flexShrink: 0,
+                    height: 44,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
                   }}
                 >
-                  {item.amount}
-                </span>
-              </div>
-              {i < visibleTx.length - 1 && (
-                <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
-              )}
-            </div>
-          ))}
-          {showAllTx && (
-            <>
-              <div style={{ height: 1, backgroundColor: '#FFFFFF10' }} />
-              <div
-                onClick={() => setShowAllTx(false)}
-                style={{
-                  height: 44,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <span style={{ color: '#4F6EF7', fontSize: 13 }}>Скрыть</span>
-              </div>
-            </>
-          )}
-        </div>
+                  <span style={{ color: '#4F6EF7', fontSize: 13 }}>Скрыть</span>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </main>
 
@@ -495,7 +568,15 @@ export default function Profile() {
                   padding: '0 16px',
                 }}
               >
-                <span style={{ color: '#E4E4E7', fontSize: 13, fontWeight: 600, letterSpacing: 1.5, fontFamily: 'monospace' }}>
+                <span
+                  style={{
+                    color: '#E4E4E7',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    letterSpacing: 1.5,
+                    fontFamily: 'monospace',
+                  }}
+                >
                   {activationItem.code}
                 </span>
                 <motion.div

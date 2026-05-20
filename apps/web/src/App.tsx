@@ -7,6 +7,7 @@ import Liked from './pages/Liked'
 import Profile from './pages/Profile'
 import NavPill from './components/layout/NavPill'
 import type { Product } from './data/products'
+import { StoreProvider } from './lib/store'
 
 export type Tab = 'home' | 'liked' | 'cart' | 'profile'
 
@@ -26,6 +27,7 @@ export default function App() {
   }
 
   return (
+    <StoreProvider>
     <div
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100dvh', position: 'relative', overflowX: 'clip' }}
     >
@@ -59,5 +61,6 @@ export default function App() {
         <NavPill activeTab={activeTab} onTabChange={setActiveTab} />
       )}
     </div>
+    </StoreProvider>
   )
 }
