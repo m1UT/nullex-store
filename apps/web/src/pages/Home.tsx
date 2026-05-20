@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { PRODUCTS } from '../data/products'
 import type { Product } from '../data/products'
+import { fetchProducts } from '../lib/api'
 
 const CATEGORIES = [
   { label: 'All',           Icon: LayoutGrid },
@@ -38,6 +39,7 @@ const SORT_OPTIONS = [
 ]
 
 export default function Home({ onProductClick }: HomeProps) {
+  const [products, setProducts] = useState<Product[]>(PRODUCTS)
   const [activeCategory, setActiveCategory] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('default')
@@ -49,6 +51,10 @@ export default function Home({ onProductClick }: HomeProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const stickyWrapRef = useRef<HTMLDivElement>(null)
   const sortBtnRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    fetchProducts().then(setProducts).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (stickyWrapRef.current) setStickyH(stickyWrapRef.current.offsetHeight)
@@ -427,7 +433,7 @@ export default function Home({ onProductClick }: HomeProps) {
           padding: '0 20px',
         }}
       >
-        {PRODUCTS.filter((p) => {
+        {products.filter((p) => {
           const q = searchQuery.trim().toLowerCase()
           const matchSearch = !q || p.name.toLowerCase().includes(q) || p.meta.toLowerCase().includes(q)
           const matchCategory = activeCategory === 0 || p.category === CATEGORIES[activeCategory].label
