@@ -23,14 +23,17 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
 }
 
 export const api = {
-  stats: ()                                => req<Stats>('GET', '/api/admin/stats'),
-  products: ()                             => req<Product[]>('GET', '/api/admin/products'),
-  createProduct: (d: ProductInput)         => req<Product>('POST', '/api/admin/products', d),
+  stats: ()                                          => req<Stats>('GET', '/api/admin/stats'),
+  products: ()                                       => req<Product[]>('GET', '/api/admin/products'),
+  createProduct: (d: ProductInput)                   => req<Product>('POST', '/api/admin/products', d),
   updateProduct: (id: number, d: Partial<ProductInput>) => req<Product>('PUT', `/api/admin/products/${id}`, d),
-  deleteProduct: (id: number)              => req<void>('DELETE', `/api/admin/products/${id}`),
-  orders: ()                               => req<Order[]>('GET', '/api/admin/orders'),
-  updateOrder: (id: number, status: string) => req<Order>('PATCH', `/api/admin/orders/${id}`, { status }),
-  users: ()                                => req<User[]>('GET', '/api/admin/users'),
+  deleteProduct: (id: number)                        => req<void>('DELETE', `/api/admin/products/${id}`),
+  orders: ()                                         => req<Order[]>('GET', '/api/admin/orders'),
+  updateOrder: (id: number, status: string)          => req<Order>('PATCH', `/api/admin/orders/${id}`, { status }),
+  users: ()                                          => req<User[]>('GET', '/api/admin/users'),
+  adjustBalance: (id: number, amount: number)        => req<{ id: number; balance: string }>('PATCH', `/api/admin/users/${id}/balance`, { amount }),
+  sendMessage: (id: number, text: string)            => req<{ ok: boolean }>('POST', `/api/admin/users/${id}/message`, { text }),
+  broadcast: (text: string)                          => req<{ sent: number; total: number }>('POST', '/api/admin/broadcast', { text }),
 }
 
 export interface Stats {

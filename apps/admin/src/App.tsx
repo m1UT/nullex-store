@@ -4,14 +4,16 @@ import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import Orders from './pages/Orders'
 import Users from './pages/Users'
+import Broadcast from './pages/Broadcast'
 
-type Page = 'dashboard' | 'products' | 'orders' | 'users'
+type Page = 'dashboard' | 'products' | 'orders' | 'users' | 'broadcast'
 
 const TABS: { key: Page; label: string }[] = [
-  { key: 'dashboard', label: 'Дашборд' },
-  { key: 'products',  label: 'Товары' },
-  { key: 'orders',    label: 'Заказы' },
-  { key: 'users',     label: 'Пользователи' },
+  { key: 'dashboard',  label: 'Дашборд' },
+  { key: 'products',   label: 'Товары' },
+  { key: 'orders',     label: 'Заказы' },
+  { key: 'users',      label: 'Пользователи' },
+  { key: 'broadcast',  label: 'Рассылка' },
 ]
 
 export default function App() {
@@ -47,6 +49,7 @@ export default function App() {
               padding: '0 14px', fontSize: 14, fontWeight: page === tab.key ? 700 : 400,
               background: page === tab.key ? 'rgba(79,110,247,0.15)' : 'transparent',
               color: page === tab.key ? '#4F6EF7' : '#A1A1AA',
+              cursor: 'pointer',
             }}
           >{tab.label}</button>
         ))}
@@ -54,7 +57,7 @@ export default function App() {
         <div style={{ flex: 1 }} />
         <button onClick={logout} style={{
           height: 40, borderRadius: 10, border: '1px solid rgba(255,59,48,0.2)',
-          background: 'transparent', color: '#FF3B30', fontSize: 13,
+          background: 'transparent', color: '#FF3B30', fontSize: 13, cursor: 'pointer',
         }}>Выйти</button>
       </aside>
 
@@ -64,6 +67,7 @@ export default function App() {
         {page === 'products'  && <Products />}
         {page === 'orders'    && <Orders />}
         {page === 'users'     && <Users />}
+        {page === 'broadcast' && <Broadcast />}
       </main>
     </div>
   )

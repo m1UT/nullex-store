@@ -69,4 +69,27 @@ export class AdminController {
   getUsers() {
     return this.admin.getUsers()
   }
+
+  @Patch('users/:id/balance')
+  adjustBalance(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { amount: number },
+  ) {
+    return this.admin.adjustBalance(id, body.amount)
+  }
+
+  @Post('users/:id/message')
+  @HttpCode(200)
+  sendMessage(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { text: string },
+  ) {
+    return this.admin.sendMessageToUser(id, body.text)
+  }
+
+  @Post('broadcast')
+  @HttpCode(200)
+  broadcast(@Body() body: { text: string }) {
+    return this.admin.broadcast(body.text)
+  }
 }
