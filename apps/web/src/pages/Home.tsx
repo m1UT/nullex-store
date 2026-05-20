@@ -57,6 +57,10 @@ export default function Home({ onProductClick }: HomeProps) {
 
   useEffect(() => {
     fetchProducts().then(setProducts).catch(() => {})
+    const interval = setInterval(() => {
+      fetchProducts().then(setProducts).catch(() => {})
+    }, 30_000)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {

@@ -190,9 +190,13 @@ export async function fetchOrders(): Promise<Order[]> {
 export async function placeOrder(): Promise<{ ok: true; orders: Order[] } | { ok: false; error: string }> {
   try {
     const res = await authFetch('/me/orders', { method: 'POST' })
-    if (res.status === 402) return { ok: false, error: 'insufficient_balance' }
-    if (res.status === 409) return { ok: false, error: 'out_of_stock' }
-    if (!res.ok) return { ok: false, error: 'unknown' }
-    return { ok: true, orders: await res.json() }
+    if (res.ok) return { ok: true, orders: await res.json() }
+    // Parse body to detect specific errors regardless of exact status code
+    let body: Record<string, unknown> = {}
+    try { body = await res.json() } catch { /* ignore */ }
+    const msg = String(body.message ?? '').toLowerCase()
+    if (res.status === 402 || msg.includes('balance')) return { ok: false, error: 'insufficient_balance' }
+    if (res.status === 409 || msg.includes('stock')) return { ok: false, error: 'out_of_stock' }
+    return { ok: false, error: 'unknown' }
   } catch { return { ok: false, error: 'network' } }
 }

@@ -51,6 +51,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setOrders(ords)
       },
     )
+
+    const interval = setInterval(() => {
+      fetchMe().then((me) => { if (me) setUser(me) })
+    }, 30_000)
+
+    return () => clearInterval(interval)
   }, [])
 
   const toggleLike = useCallback(async (productId: number) => {
@@ -81,12 +87,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const placeOrder = useCallback(async () => {
     const result = await placeOrderApi()
     if (!result.ok) return result
+    // Optimistic balance deduction
+    setUser((prev) => {
+      if (!prev) return prev
+      const spent = cartItems.reduce((sum, item) => sum + parseFloat(item.product.price.replace('$', '')), 0)
+      return { ...prev, balance: (parseFloat(prev.balance) - spent).toFixed(2) }
+    })
     setCartItems([])
     const [ords, me] = await Promise.all([fetchOrders(), fetchMe()])
     setOrders(ords)
     if (me) setUser(me)
     return { ok: true as const }
-  }, [])
+  }, [cartItems])
 
   return (
     <StoreContext.Provider value={{
