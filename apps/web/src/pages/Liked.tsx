@@ -13,9 +13,10 @@ const FILTER_CHIPS = [
 
 interface LikedProps {
   onProductClick: (product: Product) => void
+  onGoToCart: () => void
 }
 
-export default function Liked({ onProductClick }: LikedProps) {
+export default function Liked({ onProductClick, onGoToCart }: LikedProps) {
   const { user, likedProducts, cartItems, toggleLike, addToCart } = useStore()
   const [activeFilter, setActiveFilter] = useState(0)
 
@@ -210,7 +211,7 @@ export default function Liked({ onProductClick }: LikedProps) {
                     return (
                       <motion.div
                         whileTap={{ scale: inCart || outOfStock ? 1 : 0.88 }}
-                        onClick={e => { e.stopPropagation(); if (!inCart && !outOfStock) addToCart(productId) }}
+                        onClick={e => { e.stopPropagation(); if (inCart) { onGoToCart() } else if (!outOfStock) addToCart(productId) }}
                         style={{
                           width: 30, height: 30, borderRadius: 10,
                           backgroundColor: inCart ? 'rgba(168,255,62,0.12)' : outOfStock ? 'rgba(255,255,255,0.05)' : '#A8FF3E',

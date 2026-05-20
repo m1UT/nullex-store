@@ -20,7 +20,7 @@ export default function App() {
   const renderPage = () => {
     switch (activeTab) {
       case 'home':    return <Home onProductClick={setSelectedProduct} />
-      case 'liked':   return <Liked onProductClick={setSelectedProduct} />
+      case 'liked':   return <Liked onProductClick={setSelectedProduct} onGoToCart={() => setActiveTab('cart')} />
       case 'cart':    return <Cart />
       case 'profile': return <Profile />
     }
@@ -51,6 +51,7 @@ export default function App() {
               <ProductDetail
                 product={selectedProduct}
                 onBack={() => setSelectedProduct(null)}
+                onGoToCart={() => { setSelectedProduct(null); setActiveTab('cart') }}
               />
             </motion.div>
           )}

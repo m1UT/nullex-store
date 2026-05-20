@@ -7,6 +7,7 @@ import { useStore } from '../lib/store'
 interface ProductDetailProps {
   product: Product
   onBack: () => void
+  onGoToCart: () => void
 }
 
 const TAG_COLORS: Record<string, { text: string; border: string }> = {
@@ -29,7 +30,7 @@ const TAG_COLORS: Record<string, { text: string; border: string }> = {
   'Шифрование':      { text: '#9B5CF6', border: 'rgba(155,92,246,0.25)' },
 }
 
-export default function ProductDetail({ product, onBack }: ProductDetailProps) {
+export default function ProductDetail({ product, onBack, onGoToCart }: ProductDetailProps) {
   const { likedIds, cartItems, toggleLike, addToCart } = useStore()
   const productId = Number(product.id)
   const isLiked = likedIds.has(productId)
@@ -239,7 +240,7 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
 
         <motion.button
           whileTap={{ scale: inCart || product.stock === 0 ? 1 : 0.95 }}
-          onClick={() => !inCart && product.stock > 0 && addToCart(productId)}
+          onClick={() => { if (inCart) { onGoToCart() } else if (product.stock > 0) addToCart(productId) }}
           style={{
             display: 'flex', alignItems: 'center', gap: 10,
             backgroundColor: inCart ? '#1A1A2E' : product.stock === 0 ? '#2A2A3A' : '#A8FF3E',
