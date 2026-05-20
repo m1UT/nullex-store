@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common'
+import { InjectBot } from 'nestjs-telegraf'
+import { Telegraf } from 'telegraf'
 import { PrismaService } from '../prisma/prisma.service'
 
 @Injectable()
 export class MeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectBot() private readonly bot: Telegraf,
+  ) {}
 
   async getOrCreate(telegramId: bigint, username?: string) {
     const user = await this.prisma.user.upsert({
@@ -67,28 +72,40 @@ export class MeService {
     })
   }
 
-  async placeOrder(userId: number) {
+  async placeOrder(userId: number, telegramId: string) {
     const cartItems = await this.prisma.cartItem.findMany({
       where: { userId },
       include: { product: true },
     })
-    if (cartItems.length === 0) return { error: 'Cart is empty' }
-    const total = cartItems.reduce((sum, item) => sum + Number(item.product.price), 0)
-    const order = await this.prisma.order.create({
-      data: {
-        userId,
-        total,
-        status: 'PAID',
-        items: {
-          create: cartItems.map((item) => ({
-            productId: item.productId,
-            price: item.product.price,
-          })),
+    if (cartItems.length === 0) return []
+
+    const orders = []
+    for (const cartItem of cartItems) {
+      const order = await this.prisma.order.create({
+        data: {
+          userId,
+          total: cartItem.product.price,
+          status: 'DELIVERED',
+          items: {
+            create: [{ productId: cartItem.productId, price: cartItem.product.price }],
+          },
         },
-      },
-      include: { items: { include: { product: true } } },
-    })
+        include: { items: { include: { product: true } } },
+      })
+
+      const code = `ITEM-${String(order.items[0].id).padStart(6, '0')}`
+      try {
+        await this.bot.telegram.sendMessage(
+          telegramId,
+          `✅ *${cartItem.product.name}* — $${Number(cartItem.product.price).toFixed(2)}\n\n🔑 Код активации:\n\`${code}\``,
+          { parse_mode: 'Markdown' },
+        )
+      } catch { /* user may not have started the bot */ }
+
+      orders.push(order)
+    }
+
     await this.prisma.cartItem.deleteMany({ where: { userId } })
-    return order
+    return orders
   }
 }

@@ -68,6 +68,6 @@ export class MeController {
   @HttpCode(201)
   async placeOrder(@Req() req: any) {
     const u = await this.resolveUser(req)
-    return this.me.placeOrder(u.id)
+    return this.me.placeOrder(u.id, String(req.tgUser.id))
   }
 }
