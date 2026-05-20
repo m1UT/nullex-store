@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => {
     ? { key: fs.readFileSync(tlsKey), cert: fs.readFileSync(tlsCert) }
     : undefined
 
+  const apiTarget = env.API_TARGET || 'http://localhost:5000'
+
   return {
     plugins: [react(), tailwindcss()],
     server: {
@@ -25,6 +27,10 @@ export default defineConfig(({ mode }) => {
       host,
       https,
       allowedHosts: allowedHosts.length ? allowedHosts : undefined,
+      proxy: {
+        '/products': { target: apiTarget, changeOrigin: true },
+        '/api':      { target: apiTarget, changeOrigin: true },
+      },
     },
   }
 })
