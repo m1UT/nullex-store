@@ -157,22 +157,21 @@ export default function Liked({ onProductClick }: LikedProps) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
-                <div
-                  style={{
-                    position: 'absolute',
-                    width: 80,
-                    height: 80,
-                    background: product.glow,
-                    borderRadius: '50%',
-                  }}
-                />
-                <product.Icon
-                  size={44}
-                  color={product.iconColor}
-                  style={{ position: 'relative', zIndex: 1 }}
-                />
+                {product.images[0] ? (
+                  <img
+                    src={product.images[0]}
+                    alt=""
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <>
+                    <div style={{ position: 'absolute', width: 80, height: 80, background: product.glow, borderRadius: '50%' }} />
+                    <product.Icon size={44} color={product.iconColor} style={{ position: 'relative', zIndex: 1 }} />
+                  </>
+                )}
 
                 {/* Heart — all items here are liked; tap to unlike */}
                 <motion.div

@@ -102,9 +102,19 @@ export default function Cart() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
+                      overflow: 'hidden',
+                      position: 'relative',
                     }}
                   >
-                    <item.product.Icon size={32} color={item.product.iconColor} />
+                    {item.product.images[0] ? (
+                      <img
+                        src={item.product.images[0]}
+                        alt=""
+                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <item.product.Icon size={32} color={item.product.iconColor} />
+                    )}
                   </div>
 
                   {/* Details */}

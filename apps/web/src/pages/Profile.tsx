@@ -14,6 +14,7 @@ interface InventoryItem {
   Icon: LucideIcon
   iconColor: string
   iconBg: string
+  imageUrl: string | null
   code: string
 }
 
@@ -23,6 +24,7 @@ interface TxItem {
   Icon: LucideIcon
   iconColor: string
   iconBg: string
+  imageUrl: string | null
   date: string
   amount: string
   positive: boolean
@@ -60,6 +62,7 @@ export default function Profile() {
         Icon: vis.Icon,
         iconColor: vis.iconColor,
         iconBg: vis.bg,
+        imageUrl: item.product.imageUrl1 ?? null,
         code: `ITEM-${String(item.id).padStart(6, '0')}`,
       }
     }),
@@ -80,6 +83,7 @@ export default function Profile() {
       Icon: vis.Icon,
       iconColor: vis.iconColor,
       iconBg: vis.bg,
+      imageUrl: firstItem?.product.imageUrl1 ?? null,
       date: formatDate(order.createdAt),
       amount: `−$${Number(order.total).toFixed(2)}`,
       positive: false,
@@ -320,9 +324,15 @@ export default function Profile() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
+                        overflow: 'hidden',
+                        position: 'relative',
                       }}
                     >
-                      <item.Icon size={18} color={item.iconColor} />
+                      {item.imageUrl ? (
+                        <img src={item.imageUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <item.Icon size={18} color={item.iconColor} />
+                      )}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{item.name}</span>
@@ -440,9 +450,15 @@ export default function Profile() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
+                        overflow: 'hidden',
+                        position: 'relative',
                       }}
                     >
-                      <item.Icon size={18} color={item.iconColor} />
+                      {item.imageUrl ? (
+                        <img src={item.imageUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <item.Icon size={18} color={item.iconColor} />
+                      )}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                       <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>{item.name}</span>
