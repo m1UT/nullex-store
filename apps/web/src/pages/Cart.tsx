@@ -13,6 +13,7 @@ export default function Cart() {
     (sum, item) => sum + parseFloat(item.product.price.replace('$', '')),
     0,
   )
+  const hasEnoughBalance = user ? parseFloat(user.balance) >= total : false
 
   const handleCheckout = async () => {
     if (checkingOut || cartItems.length === 0) return
@@ -22,8 +23,8 @@ export default function Cart() {
     setCheckingOut(false)
     if (!result.ok) {
       setCheckoutError(
-        result.error === 'insufficient_balance'
-          ? 'Недостаточно средств на балансе'
+        result.error === 'insufficient_balance' ? 'Недостаточно средств на балансе'
+          : result.error === 'out_of_stock' ? 'Один из товаров закончился'
           : 'Ошибка при оплате. Попробуйте ещё раз',
       )
     }
@@ -243,27 +244,34 @@ export default function Cart() {
           {/* Checkout Button */}
           <div style={{ padding: '16px 20px 0' }}>
             <motion.button
-              whileTap={{ scale: checkingOut ? 1 : 0.97 }}
-              onClick={handleCheckout}
-              disabled={checkingOut}
+              whileTap={{ scale: checkingOut || !hasEnoughBalance ? 1 : 0.97 }}
+              onClick={hasEnoughBalance && !checkingOut ? handleCheckout : undefined}
               style={{
                 width: '100%',
                 height: 54,
-                backgroundColor: checkingOut ? '#6B9A2E' : '#A8FF3E',
+                backgroundColor: !hasEnoughBalance ? '#1A1A2E' : checkingOut ? '#6B9A2E' : '#A8FF3E',
                 borderRadius: 999,
-                border: 'none',
+                border: !hasEnoughBalance ? '1px solid rgba(255,255,255,0.08)' : 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 10,
-                cursor: checkingOut ? 'not-allowed' : 'pointer',
+                cursor: checkingOut || !hasEnoughBalance ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.2s',
               }}
             >
-              <Lock size={18} color="#0D0D14" />
-              <span style={{ color: '#0D0D14', fontSize: 16, fontWeight: 700 }}>
-                {checkingOut ? 'Обработка...' : 'Оплатить безопасно'}
-              </span>
+              {!hasEnoughBalance ? (
+                <span style={{ color: '#71717A', fontSize: 16, fontWeight: 700 }}>
+                  Пополните баланс
+                </span>
+              ) : (
+                <>
+                  <Lock size={18} color="#0D0D14" />
+                  <span style={{ color: '#0D0D14', fontSize: 16, fontWeight: 700 }}>
+                    {checkingOut ? 'Обработка...' : 'Оплатить безопасно'}
+                  </span>
+                </>
+              )}
             </motion.button>
           </div>
         </>

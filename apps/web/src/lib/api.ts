@@ -191,6 +191,7 @@ export async function placeOrder(): Promise<{ ok: true; orders: Order[] } | { ok
   try {
     const res = await authFetch('/me/orders', { method: 'POST' })
     if (res.status === 402) return { ok: false, error: 'insufficient_balance' }
+    if (res.status === 409) return { ok: false, error: 'out_of_stock' }
     if (!res.ok) return { ok: false, error: 'unknown' }
     return { ok: true, orders: await res.json() }
   } catch { return { ok: false, error: 'network' } }

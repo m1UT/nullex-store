@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
+import { Injectable, HttpException, HttpStatus, ConflictException } from '@nestjs/common'
 import { InjectBot } from 'nestjs-telegraf'
 import { Telegraf } from 'telegraf'
 import { PrismaService } from '../prisma/prisma.service'
@@ -80,6 +80,13 @@ export class MeService {
       })
       if (cartItems.length === 0) return []
 
+      // Check stock for every item
+      for (const cartItem of cartItems) {
+        if (cartItem.product.stock <= 0) {
+          throw new ConflictException(`${cartItem.product.name} out of stock`)
+        }
+      }
+
       const totalCost = cartItems.reduce((sum, item) => sum + Number(item.product.price), 0)
       const user = await tx.user.findUnique({ where: { id: userId } })
 
@@ -94,6 +101,11 @@ export class MeService {
 
       const orders = []
       for (const cartItem of cartItems) {
+        await tx.product.update({
+          where: { id: cartItem.productId },
+          data: { stock: { decrement: 1 } },
+        })
+
         const order = await tx.order.create({
           data: {
             userId,

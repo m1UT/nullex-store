@@ -82,8 +82,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const result = await placeOrderApi()
     if (!result.ok) return result
     setCartItems([])
-    const ords = await fetchOrders()
+    const [ords, me] = await Promise.all([fetchOrders(), fetchMe()])
     setOrders(ords)
+    if (me) setUser(me)
     return { ok: true as const }
   }, [])
 
