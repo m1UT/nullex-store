@@ -6,8 +6,9 @@ cd /opt/nullex-store
 git pull
 
 cd apps/bot
-/root/.nvm/versions/node/v24.13.0/bin/node /root/.nvm/versions/node/v24.13.0/bin/pnpm install --no-frozen-lockfile
-/root/.nvm/versions/node/v24.13.0/bin/node /root/.nvm/versions/node/v24.13.0/bin/pnpm build
+PNPM=$(command -v pnpm || echo "/root/.nvm/versions/node/v24.13.0/bin/pnpm")
+$PNPM install --no-frozen-lockfile
+$PNPM build
 
 systemctl restart backend.service
 echo "Backend deployed and restarted"

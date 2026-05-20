@@ -5,7 +5,8 @@ set -e
 cd /opt/nullex-store
 git pull
 
-/root/.nvm/versions/node/v24.13.0/bin/node /root/.nvm/versions/node/v24.13.0/bin/pnpm --filter 'web' build
+PNPM=$(command -v pnpm || echo "/root/.nvm/versions/node/v24.13.0/bin/pnpm")
+$PNPM --filter 'web' build
 
 systemctl restart frontend.service
 echo "Frontend deployed and restarted"
