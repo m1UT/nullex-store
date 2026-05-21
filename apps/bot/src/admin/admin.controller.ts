@@ -2,13 +2,15 @@ import * as path from 'path'
 import * as fs from 'fs'
 import {
   Controller, Get, Post, Put, Delete, Patch,
-  Param, Body, ParseIntPipe, UseGuards, HttpCode,
-  UseInterceptors, UploadedFile, BadRequestException,
+  Param, Body, Query, ParseIntPipe, UseGuards, HttpCode,
+  UseInterceptors, UploadedFile, BadRequestException, Res,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
+import { Response } from 'express'
 import { AdminGuard } from './admin.guard'
 import { AdminService } from './admin.service'
+import { ReportsService, ReportFormat, ReportType } from './reports.service'
 import { Category, OrderStatus } from '@prisma/client'
 
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads')
@@ -16,7 +18,10 @@ const UPLOADS_DIR = path.join(process.cwd(), 'uploads')
 @Controller('api/admin')
 @UseGuards(AdminGuard)
 export class AdminController {
-  constructor(private readonly admin: AdminService) {}
+  constructor(
+    private readonly admin: AdminService,
+    private readonly reports: ReportsService,
+  ) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', {
@@ -126,6 +131,26 @@ export class AdminController {
   @HttpCode(200)
   broadcast(@Body() body: { text: string }) {
     return this.admin.broadcast(body.text)
+  }
+
+  @Get('reports/:type')
+  async getReport(
+    @Param('type') type: string,
+    @Query('format') format: string,
+    @Res() res: Response,
+  ) {
+    const validTypes: ReportType[]   = ['sales', 'products', 'users']
+    const validFormats: ReportFormat[] = ['excel', 'pdf', 'word']
+    const rType   = validTypes.includes(type as ReportType)     ? (type   as ReportType)   : 'sales'
+    const rFormat = validFormats.includes(format as ReportFormat) ? (format as ReportFormat) : 'excel'
+
+    const result = await this.reports.generate(rType, rFormat)
+    res.set({
+      'Content-Type':        result.contentType,
+      'Content-Disposition': `attachment; filename="${result.filename}"`,
+      'Content-Length':      result.buffer.length,
+    })
+    res.send(result.buffer)
   }
 
   @Get('banners')

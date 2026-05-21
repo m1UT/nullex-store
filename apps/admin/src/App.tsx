@@ -5,8 +5,9 @@ import Products from './pages/Products'
 import Banners from './pages/Banners'
 import Orders from './pages/Orders'
 import Users from './pages/Users'
+import Reports from './pages/Reports'
 
-type Page = 'dashboard' | 'products' | 'banners' | 'orders' | 'users'
+type Page = 'dashboard' | 'products' | 'banners' | 'orders' | 'users' | 'reports'
 
 const TABS: { key: Page; label: string }[] = [
   { key: 'dashboard', label: 'Дашборд' },
@@ -14,6 +15,7 @@ const TABS: { key: Page; label: string }[] = [
   { key: 'banners',   label: 'Баннеры' },
   { key: 'orders',    label: 'Заказы' },
   { key: 'users',     label: 'Пользователи' },
+  { key: 'reports',   label: 'Отчёты' },
 ]
 
 export default function App() {
@@ -69,6 +71,7 @@ export default function App() {
         {page === 'banners'   && <Banners />}
         {page === 'orders'    && <Orders />}
         {page === 'users'     && <Users />}
+        {page === 'reports'   && <Reports />}
       </main>
     </div>
   )

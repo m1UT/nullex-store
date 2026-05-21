@@ -57,6 +57,22 @@ export const api = {
   adjustBalance: (id: number, amount: number)        => req<{ id: number; balance: string }>('PATCH', `/api/admin/users/${id}/balance`, { amount }),
   sendMessage: (id: number, text: string)            => req<{ ok: boolean }>('POST', `/api/admin/users/${id}/message`, { text }),
   broadcast: (text: string)                          => req<{ sent: number; total: number }>('POST', '/api/admin/broadcast', { text }),
+  downloadReport: async (type: string, format: string): Promise<void> => {
+    const ext = format === 'excel' ? 'xlsx' : format === 'word' ? 'docx' : 'pdf'
+    const res = await fetch(`${BASE}/api/admin/reports/${type}?format=${format}`, {
+      headers: { Authorization: `Bearer ${token()}` },
+    })
+    if (!res.ok) throw new Error('Download failed')
+    const blob = await res.blob()
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href     = url
+    a.download = `${type}-report-${new Date().toISOString().slice(0, 10)}.${ext}`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  },
 }
 
 export interface Stats {
