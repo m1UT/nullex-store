@@ -138,4 +138,66 @@ export class AdminService {
   deleteBanner(id: number) {
     return this.prisma.banner.delete({ where: { id } })
   }
+
+  async getChartData() {
+    const now = new Date()
+    const thirtyDaysAgo = new Date(now)
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29)
+    thirtyDaysAgo.setHours(0, 0, 0, 0)
+
+    const [statusGroups, recentOrders, recentUsers, allItemGroups] = await Promise.all([
+      this.prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
+      this.prisma.order.findMany({
+        where: { createdAt: { gte: thirtyDaysAgo }, status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] } },
+        select: { createdAt: true, total: true },
+      }),
+      this.prisma.user.findMany({
+        where: { createdAt: { gte: thirtyDaysAgo } },
+        select: { createdAt: true },
+      }),
+      this.prisma.orderItem.groupBy({ by: ['productId'], _count: { _all: true } }),
+    ])
+
+    const topItemGroups = [...allItemGroups]
+      .sort((a, b) => b._count._all - a._count._all)
+      .slice(0, 5)
+
+    const productIds = topItemGroups.map((p) => p.productId)
+    const products = productIds.length > 0
+      ? await this.prisma.product.findMany({
+          where: { id: { in: productIds } },
+          select: { id: true, name: true },
+        })
+      : []
+    const productMap = Object.fromEntries(products.map((p) => [p.id, p.name]))
+
+    const days: string[] = []
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now)
+      d.setDate(d.getDate() - i)
+      days.push(d.toISOString().slice(0, 10))
+    }
+
+    const revenueMap: Record<string, number> = Object.fromEntries(days.map((d) => [d, 0]))
+    const usersMap: Record<string, number> = Object.fromEntries(days.map((d) => [d, 0]))
+
+    for (const o of recentOrders) {
+      const day = o.createdAt.toISOString().slice(0, 10)
+      if (revenueMap[day] !== undefined) revenueMap[day] += Number(o.total)
+    }
+    for (const u of recentUsers) {
+      const day = u.createdAt.toISOString().slice(0, 10)
+      if (usersMap[day] !== undefined) usersMap[day]++
+    }
+
+    return {
+      ordersByStatus: statusGroups.map((s) => ({ status: s.status, count: s._count._all })),
+      revenueByDay: days.map((d) => ({ date: d.slice(5), revenue: revenueMap[d] })),
+      usersByDay: days.map((d) => ({ date: d.slice(5), users: usersMap[d] })),
+      topProducts: topItemGroups.map((p) => ({
+        name: productMap[p.productId] ?? `#${p.productId}`,
+        count: p._count._all,
+      })),
+    }
+  }
 }

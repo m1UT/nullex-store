@@ -30,6 +30,7 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
 
 export const api = {
   stats: ()                                          => req<Stats>('GET', '/api/admin/stats'),
+  charts: ()                                         => req<ChartData>('GET', '/api/admin/charts'),
   products: ()                                       => req<Product[]>('GET', '/api/admin/products'),
   createProduct: (d: ProductInput)                   => req<Product>('POST', '/api/admin/products', d),
   updateProduct: (id: number, d: Partial<ProductInput>) => req<Product>('PUT', `/api/admin/products/${id}`, d),
@@ -63,6 +64,13 @@ export interface Stats {
   totalProducts: number
   totalOrders: number
   totalRevenue: number
+}
+
+export interface ChartData {
+  ordersByStatus: { status: string; count: number }[]
+  revenueByDay: { date: string; revenue: number }[]
+  usersByDay: { date: string; users: number }[]
+  topProducts: { name: string; count: number }[]
 }
 
 export interface Product {

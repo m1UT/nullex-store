@@ -46,6 +46,11 @@ export class AdminController {
     return this.admin.getStats()
   }
 
+  @Get('charts')
+  getChartData() {
+    return this.admin.getChartData()
+  }
+
   @Get('products')
   getProducts() {
     return this.admin.getProducts()

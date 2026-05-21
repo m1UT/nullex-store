@@ -7,11 +7,40 @@ const inputStyle: React.CSSProperties = {
   outline: 'none', width: '100%',
 }
 
+type SortCol = 'id' | 'balance' | 'orders' | 'createdAt'
+
+function SortTh({
+  label, col, sort, onSort,
+}: {
+  label: string
+  col: SortCol
+  sort: { col: SortCol; dir: 'asc' | 'desc' }
+  onSort: (col: SortCol) => void
+}) {
+  const active = sort.col === col
+  return (
+    <th
+      onClick={() => onSort(col)}
+      style={{
+        padding: '12px 16px', textAlign: 'left', fontSize: 12,
+        color: active ? '#E4E4E7' : '#71717A', fontWeight: 600,
+        cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap',
+      }}
+    >
+      {label}{' '}
+      <span style={{ opacity: active ? 1 : 0.3, fontSize: 10 }}>
+        {active ? (sort.dir === 'asc' ? '↑' : '↓') : '↕'}
+      </span>
+    </th>
+  )
+}
+
 export default function Users() {
   const [users, setUsers] = useState<User[]>([])
   const [balanceModal, setBalanceModal] = useState<User | null>(null)
   const [amount, setAmount] = useState('')
   const [saving, setSaving] = useState(false)
+  const [sort, setSort] = useState<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'id', dir: 'desc' })
 
   const load = () => api.users().then(setUsers)
   useEffect(() => { load() }, [])
@@ -28,6 +57,18 @@ export default function Users() {
     } finally { setSaving(false) }
   }
 
+  const toggleSort = (col: SortCol) =>
+    setSort((s) => s.col === col ? { col, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'desc' })
+
+  const sorted = [...users].sort((a, b) => {
+    let cmp = 0
+    if (sort.col === 'id') cmp = a.id - b.id
+    else if (sort.col === 'balance') cmp = Number(a.balance) - Number(b.balance)
+    else if (sort.col === 'orders') cmp = a._count.orders - b._count.orders
+    else if (sort.col === 'createdAt') cmp = a.createdAt.localeCompare(b.createdAt)
+    return sort.dir === 'asc' ? cmp : -cmp
+  })
+
   return (
     <div>
       <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>Пользователи</h2>
@@ -36,13 +77,17 @@ export default function Users() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              {['ID', 'Telegram ID', 'Username', 'Баланс', 'Заказы', 'Дата', ''].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>{h}</th>
-              ))}
+              <SortTh label="ID"        col="id"        sort={sort} onSort={toggleSort} />
+              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Telegram ID</th>
+              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Username</th>
+              <SortTh label="Баланс"   col="balance"   sort={sort} onSort={toggleSort} />
+              <SortTh label="Заказы"   col="orders"    sort={sort} onSort={toggleSort} />
+              <SortTh label="Дата"     col="createdAt" sort={sort} onSort={toggleSort} />
+              <th style={{ padding: '12px 16px' }} />
             </tr>
           </thead>
           <tbody>
-            {users.map(u => (
+            {sorted.map((u) => (
               <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <td style={{ padding: '12px 16px', color: '#71717A', fontSize: 13 }}>#{u.id}</td>
                 <td style={{ padding: '12px 16px', fontSize: 13, color: '#A1A1AA' }}>{u.telegramId}</td>
@@ -69,7 +114,7 @@ export default function Users() {
                 </td>
               </tr>
             ))}
-            {!users.length && (
+            {!sorted.length && (
               <tr><td colSpan={7} style={{ padding: 32, textAlign: 'center', color: '#71717A', fontSize: 13 }}>Нет пользователей</td></tr>
             )}
           </tbody>
@@ -113,7 +158,7 @@ export default function Users() {
                 step="0.01"
                 placeholder="0.00"
                 value={amount}
-                onChange={e => setAmount(e.target.value)}
+                onChange={(e) => setAmount(e.target.value)}
               />
             </div>
 

@@ -4,6 +4,34 @@ import { api, Product, ProductInput, resolveImageUrl } from '../api'
 const CATEGORIES = ['GAMES', 'SOFTWARE', 'SUBSCRIPTIONS'] as const
 const EMPTY: ProductInput = { name: '', description: '', category: 'GAMES', price: 0, stock: 0, imageUrl1: '', imageUrl2: '', imageUrl3: '' }
 
+type SortCol = 'id' | 'name' | 'price' | 'stock'
+
+function SortTh({
+  label, col, sort, onSort,
+}: {
+  label: string
+  col: SortCol
+  sort: { col: SortCol; dir: 'asc' | 'desc' }
+  onSort: (col: SortCol) => void
+}) {
+  const active = sort.col === col
+  return (
+    <th
+      onClick={() => onSort(col)}
+      style={{
+        padding: '12px 16px', textAlign: 'left', fontSize: 12,
+        color: active ? '#E4E4E7' : '#71717A', fontWeight: 600,
+        cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap',
+      }}
+    >
+      {label}{' '}
+      <span style={{ opacity: active ? 1 : 0.3, fontSize: 10 }}>
+        {active ? (sort.dir === 'asc' ? '↑' : '↓') : '↕'}
+      </span>
+    </th>
+  )
+}
+
 const inputStyle: React.CSSProperties = {
   height: 40, borderRadius: 10, border: '1px solid rgba(255,255,255,0.09)',
   backgroundColor: '#1A1A2E', color: '#FFF', padding: '0 12px', fontSize: 13,
@@ -19,10 +47,23 @@ export default function Products() {
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; data: ProductInput; id?: number } | null>(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState<Record<number, boolean>>({})
+  const [sort, setSort] = useState<{ col: SortCol; dir: 'asc' | 'desc' }>({ col: 'id', dir: 'desc' })
   const fileRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)]
 
   const load = () => api.products().then(setProducts)
   useEffect(() => { load() }, [])
+
+  const toggleSort = (col: SortCol) =>
+    setSort((s) => s.col === col ? { col, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'desc' })
+
+  const sorted = [...products].sort((a, b) => {
+    let cmp = 0
+    if (sort.col === 'id') cmp = a.id - b.id
+    else if (sort.col === 'name') cmp = a.name.localeCompare(b.name)
+    else if (sort.col === 'price') cmp = Number(a.price) - Number(b.price)
+    else if (sort.col === 'stock') cmp = a.stock - b.stock
+    return sort.dir === 'asc' ? cmp : -cmp
+  })
 
   const openCreate = () => setModal({ mode: 'create', data: { ...EMPTY } })
   const openEdit = (p: Product) => setModal({
@@ -77,13 +118,16 @@ export default function Products() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              {['ID', 'Название', 'Категория', 'Цена', 'Остаток', ''].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>{h}</th>
-              ))}
+              <SortTh label="ID"       col="id"    sort={sort} onSort={toggleSort} />
+              <SortTh label="Название" col="name"  sort={sort} onSort={toggleSort} />
+              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Категория</th>
+              <SortTh label="Цена"     col="price" sort={sort} onSort={toggleSort} />
+              <SortTh label="Остаток"  col="stock" sort={sort} onSort={toggleSort} />
+              <th style={{ padding: '12px 16px' }} />
             </tr>
           </thead>
           <tbody>
-            {products.map(p => (
+            {sorted.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <td style={{ padding: '12px 16px', color: '#71717A', fontSize: 13 }}>#{p.id}</td>
                 <td style={{ padding: '12px 16px', fontSize: 13 }}>{p.name}</td>
