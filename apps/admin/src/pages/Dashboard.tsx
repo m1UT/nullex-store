@@ -193,7 +193,7 @@ export default function Dashboard() {
               <AreaChart values={charts.revenueByDay.map((d) => d.revenue)} color="#A8FF3E" />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                 <span style={{ fontSize: 10, color: '#3F3F46' }}>{charts.revenueByDay[0]?.date}</span>
-                <span style={{ fontSize: 10, color: '#3F3F46' }}>{charts.revenueByDay.at(-1)?.date}</span>
+                <span style={{ fontSize: 10, color: '#3F3F46' }}>{charts.revenueByDay[charts.revenueByDay.length - 1]?.date}</span>
               </div>
             </>
           ) : <Loading />}
@@ -208,7 +208,7 @@ export default function Dashboard() {
               <AreaChart values={charts.usersByDay.map((d) => d.users)} color="#4F6EF7" />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                 <span style={{ fontSize: 10, color: '#3F3F46' }}>{charts.usersByDay[0]?.date}</span>
-                <span style={{ fontSize: 10, color: '#3F3F46' }}>{charts.usersByDay.at(-1)?.date}</span>
+                <span style={{ fontSize: 10, color: '#3F3F46' }}>{charts.usersByDay[charts.usersByDay.length - 1]?.date}</span>
               </div>
             </>
           ) : <Loading />}
