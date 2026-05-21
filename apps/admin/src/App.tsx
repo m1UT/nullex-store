@@ -34,6 +34,7 @@ export default function App() {
         width: 220, backgroundColor: '#0A0A10',
         borderRight: '1px solid rgba(255,255,255,0.06)',
         display: 'flex', flexDirection: 'column', padding: 24, gap: 8, flexShrink: 0,
+        position: 'sticky', top: 0, height: '100vh', overflowY: 'auto',
       }}>
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 18, fontWeight: 700 }}>Nullex</div>
@@ -62,7 +63,7 @@ export default function App() {
       </aside>
 
       {/* Content */}
-      <main style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
+      <main style={{ flex: 1, padding: 32, overflowY: 'auto', minHeight: '100vh' }}>
         {page === 'dashboard' && <Dashboard />}
         {page === 'products'  && <Products />}
         {page === 'banners'   && <Banners />}
