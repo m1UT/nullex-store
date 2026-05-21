@@ -15,7 +15,7 @@ const STATUS_LABEL: Record<string, string> = {
   CANCELLED: 'Отменён',
 }
 
-type SortCol = 'id' | 'total' | 'status' | 'createdAt'
+type SortCol = 'id' | 'user' | 'product' | 'total' | 'status' | 'createdAt'
 
 function SortTh({
   label, col, sort, onSort, style,
@@ -56,6 +56,8 @@ export default function Orders() {
   const sorted = [...orders].sort((a, b) => {
     let cmp = 0
     if (sort.col === 'id') cmp = a.id - b.id
+    else if (sort.col === 'user') cmp = (a.user.username ?? a.user.telegramId).localeCompare(b.user.username ?? b.user.telegramId)
+    else if (sort.col === 'product') cmp = a.items.map((i) => i.product.name).join(', ').localeCompare(b.items.map((i) => i.product.name).join(', '))
     else if (sort.col === 'total') cmp = Number(a.total) - Number(b.total)
     else if (sort.col === 'status') cmp = a.status.localeCompare(b.status)
     else if (sort.col === 'createdAt') cmp = a.createdAt.localeCompare(b.createdAt)
@@ -71,8 +73,8 @@ export default function Orders() {
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               <SortTh label="ID"           col="id"        sort={sort} onSort={toggleSort} />
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Пользователь</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Товар</th>
+              <SortTh label="Пользователь" col="user"      sort={sort} onSort={toggleSort} />
+              <SortTh label="Товар"        col="product"   sort={sort} onSort={toggleSort} />
               <SortTh label="Сумма"        col="total"     sort={sort} onSort={toggleSort} />
               <SortTh label="Статус"       col="status"    sort={sort} onSort={toggleSort} />
               <SortTh label="Дата"         col="createdAt" sort={sort} onSort={toggleSort} />

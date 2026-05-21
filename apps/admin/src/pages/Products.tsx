@@ -4,7 +4,7 @@ import { api, Product, ProductInput, resolveImageUrl } from '../api'
 const CATEGORIES = ['GAMES', 'SOFTWARE', 'SUBSCRIPTIONS'] as const
 const EMPTY: ProductInput = { name: '', description: '', category: 'GAMES', price: 0, stock: 0, imageUrl1: '', imageUrl2: '', imageUrl3: '' }
 
-type SortCol = 'id' | 'name' | 'price' | 'stock'
+type SortCol = 'id' | 'name' | 'category' | 'price' | 'stock'
 
 function SortTh({
   label, col, sort, onSort,
@@ -60,6 +60,7 @@ export default function Products() {
     let cmp = 0
     if (sort.col === 'id') cmp = a.id - b.id
     else if (sort.col === 'name') cmp = a.name.localeCompare(b.name)
+    else if (sort.col === 'category') cmp = a.category.localeCompare(b.category)
     else if (sort.col === 'price') cmp = Number(a.price) - Number(b.price)
     else if (sort.col === 'stock') cmp = a.stock - b.stock
     return sort.dir === 'asc' ? cmp : -cmp
@@ -118,11 +119,11 @@ export default function Products() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <SortTh label="ID"       col="id"    sort={sort} onSort={toggleSort} />
-              <SortTh label="Название" col="name"  sort={sort} onSort={toggleSort} />
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Категория</th>
-              <SortTh label="Цена"     col="price" sort={sort} onSort={toggleSort} />
-              <SortTh label="Остаток"  col="stock" sort={sort} onSort={toggleSort} />
+              <SortTh label="ID"        col="id"       sort={sort} onSort={toggleSort} />
+              <SortTh label="Название"  col="name"     sort={sort} onSort={toggleSort} />
+              <SortTh label="Категория" col="category" sort={sort} onSort={toggleSort} />
+              <SortTh label="Цена"      col="price"    sort={sort} onSort={toggleSort} />
+              <SortTh label="Остаток"   col="stock"    sort={sort} onSort={toggleSort} />
               <th style={{ padding: '12px 16px' }} />
             </tr>
           </thead>

@@ -7,7 +7,7 @@ const inputStyle: React.CSSProperties = {
   outline: 'none', width: '100%',
 }
 
-type SortCol = 'id' | 'balance' | 'orders' | 'createdAt'
+type SortCol = 'id' | 'telegramId' | 'username' | 'balance' | 'orders' | 'createdAt'
 
 function SortTh({
   label, col, sort, onSort,
@@ -63,6 +63,8 @@ export default function Users() {
   const sorted = [...users].sort((a, b) => {
     let cmp = 0
     if (sort.col === 'id') cmp = a.id - b.id
+    else if (sort.col === 'telegramId') cmp = a.telegramId.localeCompare(b.telegramId)
+    else if (sort.col === 'username') cmp = (a.username ?? '').localeCompare(b.username ?? '')
     else if (sort.col === 'balance') cmp = Number(a.balance) - Number(b.balance)
     else if (sort.col === 'orders') cmp = a._count.orders - b._count.orders
     else if (sort.col === 'createdAt') cmp = a.createdAt.localeCompare(b.createdAt)
@@ -77,12 +79,12 @@ export default function Users() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <SortTh label="ID"        col="id"        sort={sort} onSort={toggleSort} />
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Telegram ID</th>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#71717A', fontWeight: 600 }}>Username</th>
-              <SortTh label="Баланс"   col="balance"   sort={sort} onSort={toggleSort} />
-              <SortTh label="Заказы"   col="orders"    sort={sort} onSort={toggleSort} />
-              <SortTh label="Дата"     col="createdAt" sort={sort} onSort={toggleSort} />
+              <SortTh label="ID"          col="id"         sort={sort} onSort={toggleSort} />
+              <SortTh label="Telegram ID" col="telegramId" sort={sort} onSort={toggleSort} />
+              <SortTh label="Username"    col="username"   sort={sort} onSort={toggleSort} />
+              <SortTh label="Баланс"      col="balance"    sort={sort} onSort={toggleSort} />
+              <SortTh label="Заказы"      col="orders"     sort={sort} onSort={toggleSort} />
+              <SortTh label="Дата"        col="createdAt"  sort={sort} onSort={toggleSort} />
               <th style={{ padding: '12px 16px' }} />
             </tr>
           </thead>
